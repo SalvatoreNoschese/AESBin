@@ -1,0 +1,17 @@
+# Gitignore for AESBin
+# Ignore configuration file containing sensitive credentials and parameters
+config.php
+
+# Development tooling (not part of the application)
+eslint.config.mjs
+package.json
+package-lock.json
+purgecss.config.mjs
+
+# Ignore local dev environment
+/.ddev/
+
+# Ignore storage directory (encrypted file blobs, generated .htaccess, index.html).
+# /storage/ covers the default storage_path only — if you changed storage_path
+# in config.php, add that custom directory here too.
+/storage/
