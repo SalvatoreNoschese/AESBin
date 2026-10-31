@@ -1,0 +1,102 @@
+/* privacy.css — classes used only by the privacy page. Loaded after base.css. */
+.privacy-page-title {
+    font-size: 1.3rem;
+    margin: 0 0 18px;
+}
+/* The data controller's details: a .privacy-section (spacing, heading
+   and text), framed, its heading in capitals. */
+.privacy-holder {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+.privacy-holder h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.privacy-email-js:has(> span:empty)::after,
+.page-footer-contact-link:has(> span:empty)::after {
+    content: attr(data-js-required);
+    color: var(--danger);
+}
+.privacy-intro {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 22px;
+}
+.privacy-section {
+    margin: 0 0 26px;
+}
+.privacy-section h2 {
+    font-size: 1.05rem;
+    margin: 0 0 8px;
+}
+.privacy-section p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text2);
+}
+/* Cookie table (privacy.php): scrolls on its own on a narrow screen. No
+   "cookie" in the class names: content blockers' cookie-notice lists hide
+   any element whose class contains it, and would hide the table too. */
+.privacy-table-wrap {
+    overflow-x: auto;
+    margin-top: 12px;
+}
+.privacy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+.privacy-table th,
+.privacy-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+}
+.privacy-table th {
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.privacy-table code {
+    white-space: nowrap;
+}
+.privacy-ck-present {
+    color: var(--success);
+}
+/* Narrow screens: one block per cookie, each value under its column name
+   (data-label), instead of a table to scroll sideways. */
+@media (max-width: 680px) {
+    .privacy-table thead {
+        display: none;
+    }
+    .privacy-table tr {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .privacy-table td {
+        display: block;
+        padding: 2px 0;
+        border: 0;
+    }
+    .privacy-table td::before {
+        content: attr(data-label) ": ";
+        color: var(--text);
+        font-weight: 600;
+    }
+}
+/* Language switcher (privacy.php). The <select> submits itself when JS is on;
+   .privacy-lang-go-btn is the <noscript> fallback. */
+.privacy-lang-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.privacy-lang-go-btn {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}

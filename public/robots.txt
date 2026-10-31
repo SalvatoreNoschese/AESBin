@@ -1,0 +1,9 @@
+# Nothing here should be indexed, and every response says so itself: an
+# X-Robots-Tag header (pages, API, downloads, static files) and, on pages,
+# <meta name="robots" content="noindex">. Both are only seen by a crawler
+# allowed to fetch the URL: "Disallow: /" would hide them, and a link posted
+# elsewhere could then be listed as a bare URL. So crawling is allowed and
+# indexing is refused response by response. (Read only at the root of a
+# host: a subdirectory install relies on the headers and tags alone.)
+User-agent: *
+Disallow:

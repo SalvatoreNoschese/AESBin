@@ -1,0 +1,39 @@
+# Normalise line endings so a Windows contributor doesn't reformat whole files.
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.zip binary
+
+# Vendored builds: collapse them in diffs and keep them out of the language
+# stats, otherwise GitHub labels the project "JavaScript" because of
+# pdf.worker.min.mjs.
+app/vendor/**             linguist-vendored
+public/vendor/**          linguist-vendored
+
+*.webp binary
+*.svg  text
+
+# Kept out of the archives GitHub generates from a tag ("Source code (zip)"),
+# which are produced with `git archive` and honour this attribute. That archive
+# IS the download (see CONTRIBUTING.md § Cutting a release), so this list
+# decides what users get: the site and nothing else. Everything here stays in
+# the repository and on the website; help.html links to the documents on
+# GitHub, and nothing in the application reads them.
+#
+# NOT listed here, and never to be: public/, app/ (all of it, the installer in
+# app/setup/ and the libraries in app/vendor/ included), config-sample.php,
+# .htaccess, LICENSE (the AGPL travels with the program). That is the
+# application, and no Composer step exists to restore app/vendor/.
+.github/          export-ignore
+screenshots/      export-ignore
+bin/              export-ignore
+docs/             export-ignore
+tests/            export-ignore
+/README.md        export-ignore
+/CHANGELOG.md     export-ignore
+/CONTRIBUTING.md  export-ignore
+/SECURITY.md      export-ignore
+.editorconfig     export-ignore
+.gitattributes    export-ignore
+.gitignore        export-ignore

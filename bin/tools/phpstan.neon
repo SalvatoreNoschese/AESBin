@@ -1,0 +1,52 @@
+parameters:
+    level: 5
+
+    # Requirements::PHP_MIN up to the newest PHP in CI (bin/lint.sh 3i checks
+    # min). PHPStan then flags anything missing somewhere in the range, such
+    # as a PHP 8.4 function called without a function_exists() guard.
+    phpVersion:
+        min: 80300
+        max: 80599
+
+    # Defines the runtime constants from app/includes/bootstrap.php, which this
+    # file cannot declare itself.
+    bootstrapFiles:
+        - phpstan-constants.php
+
+    # Treated as "some string", not the placeholder values; otherwise the
+    # subdirectory branch in aesbin_route_path() (helpers.php) reads as dead
+    # code and config.php as a missing file.
+    dynamicConstantNames:
+        - AESBIN_ROOT
+        - AESBIN_APP_DIR
+        - AESBIN_BASE
+        - AESBIN_FILES
+
+    # app/actions/ files are included by app/includes/router.php and run in its
+    # scope: $db, $auth, $security, $crypto, the services, $config and the
+    # footer's $privacyEnabled and $contactLink come from bootstrap.php,
+    # $method and the route parameters ($did, $cid, $fileId...) from
+    # router.php. Only these names are ignored; any other
+    # undefined variable is still reported.
+    ignoreErrors:
+        -
+            identifier: variable.undefined
+            message: '#^Variable \$(db|auth|security|crypto|fileSvc|shareSvc|config|privacyEnabled|contactLink|method|did|cid|fileId|fileToken|shareId|shareToken) might not be defined\.$#'
+            paths:
+                - ../../app/actions/*
+                - ../../app/includes/router.php
+
+    # Relative to this file. app/views/ and app/setup/template.php are templates
+    # whose variables are set by the including file, so PHPStan would flag
+    # nearly every line.
+    paths:
+        - ../../app/includes
+        - ../../app/actions
+        - ../../app/setup/index.php
+        - ../../public/index.php
+
+    # Scanned for class definitions, not analysed: there is no Composer
+    # autoloader for PHPStan to find them through. The rest of app/vendor/ is JS.
+    scanDirectories:
+        - ../../app/vendor/altcha-lib-php
+        - ../../app/vendor/passkeys-php

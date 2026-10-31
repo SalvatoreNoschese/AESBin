@@ -1,0 +1,3 @@
+kjua ships no separate LICENSE file. See the "License" section in
+README.md, in this same directory, for the full MIT text and copyright
+notice.

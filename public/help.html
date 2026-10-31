@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--
+  help.html — the documentation entry point for an unpacked AESBin.
+
+  Why this file exists, and why the Markdown sources are NOT in the release:
+  a .md file downloaded onto a web host is read as plain text or not at all,
+  while the same content on GitHub is rendered, searchable and current. So the
+  package carries one page that says what AESBin is and links to the rest,
+  rather than ten that nobody can read comfortably. Same shape as
+  WordPress's readme.html, for the same reason, but not under that
+  NAME: shared hosts and WAF rulesets block /readme.html on sight, because it
+  is how a WordPress version is read from outside, often before the request
+  reaches Apache.
+
+  Deliberately NOT in here: the version number, for the same reason the name
+  is not readme.html. This page is linked from the footer of every page,
+  public share pages included, so it must give away nothing the login screen
+  does not.
+
+  Self-contained on purpose: no stylesheet, no font, no script from anywhere.
+  A page about a project whose selling point is "no CDN" cannot fetch a CDN.
+
+  FORKING THIS PROJECT? Two places carry the repository URL: this file, and the
+  AESBIN_GITHUB_REPO constant the PHP pages render. Messages in the application
+  point at help.html#<anchor> rather than at a github.com address precisely so
+  that those two stay the only ones.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>AESBin — documentation</title>
+<style>
+:root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --accent: #2f81f7;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 32px 20px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 760px; margin: 0 auto; }
+h1 { font-size: 1.7rem; margin: 0 0 6px; }
+h1 a.home { color: var(--text); text-decoration: none; }
+h1 a.home:hover { color: var(--accent); }
+h2 { font-size: 1.15rem; margin: 36px 0 12px; }
+h3 { font-size: 0.95rem; margin: 24px 0 10px; color: var(--text2); font-weight: 600; }
+p { color: var(--text2); }
+a { color: var(--accent); }
+.lead { color: var(--text); font-size: 1.05rem; }
+.note {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    background: var(--bg2);
+    padding: 12px 16px;
+    margin: 20px 0;
+}
+/* First paragraph flush with the top, the rest spaced: these boxes hold two
+   or three separate statements, which read poorly run together. */
+.note p { margin: 10px 0 0; }
+.note p:first-child { margin-top: 0; }
+ul.docs { list-style: none; padding: 0; margin: 0; }
+ul.docs li {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg2);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+ul.docs a { font-weight: 600; text-decoration: none; }
+ul.docs a:hover { text-decoration: underline; }
+ul.docs span { display: block; color: var(--text2); font-size: 0.92rem; margin-top: 3px; }
+footer { margin-top: 40px; color: var(--text2); font-size: 0.9rem; }
+code {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+<main>
+
+<!-- "./" and not "/" or "../": this page is served at the application's root
+     URL (public/ on disk), which may itself be a subdirectory (/aesbin/). An absolute "/" would land on the
+     domain root and "../" one level above the install; "./" stays put and lets
+     DirectoryIndex serve index.php. -->
+<h1><a class="home" href="./">🔐 AESBin</a></h1>
+<p class="lead">A self-hosted, single-user file manager that keeps everything it
+stores encrypted at rest, and runs on ordinary shared PHP hosting.</p>
+
+<div class="note">
+<p><strong>Encryption is server-side, not client-side.</strong> During an
+active session the server unwraps the master key for every request (the PHP
+session holds it only wrapped with a per-tab key), so this is not the same
+guarantee a zero-knowledge client-side app gives you.</p>
+
+<p>What it defeats is theft of the database, the stored files, or the whole
+disk.</p>
+
+<p>Read the <a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/security-model.md#threat-model">threat
+model</a> before deciding it fits your needs.</p>
+</div>
+
+<div class="note">
+<p><strong>Source on GitHub:</strong> <a href="https://github.com/SalvatoreNoschese/AESBin">AESBin</a>
+(<a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/LICENSE">AGPL-3.0</a>)</p>
+
+<p>If this instance has been modified, its operator is required to offer you
+the modified source as well.</p>
+</div>
+
+<h2>Documentation</h2>
+<p>It lives with the source, where it is rendered and stays current. The two
+groups below mirror the repository: files in its root, and the <code>docs/</code>
+folder.</p>
+
+<h3>./ (root)</h3>
+<ul class="docs">
+<li id="readme"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/README.md">README</a>
+    <span>What AESBin is, what it is not, how it compares to the alternatives, and how to install it in six steps.</span></li>
+
+<li id="changelog"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/CHANGELOG.md">Changelog</a>
+    <span>Release history.</span></li>
+
+<li id="security-policy"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/SECURITY.md">Security policy</a>
+    <span>How to report a vulnerability, and what is in and out of scope.</span></li>
+
+<li id="contributing"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/CONTRIBUTING.md">Contributing</a>
+    <span>How to open an issue or a pull request, and how to build a release.</span></li>
+
+</ul>
+
+<h3>docs/</h3>
+<ul class="docs">
+<li id="installation"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/installation.md">Installation &amp; configuration</a>
+    <span>Server requirements, the setup wizard step by step, nginx and Caddy rules, and the main <code>config.php</code> options.</span></li>
+
+<li id="updating"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/updating.md">Updating</a>
+    <span>Installing a new release: back up first, keep <code>config.php</code> and the storage folder, replace the rest.</span></li>
+
+<li id="security-model"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/security-model.md">Security model &amp; threat model</a>
+    <span>What the encryption covers, what it does not, and how the recovery gate works.</span></li>
+
+<li id="features"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/features.md">Features in full</a>
+    <span>What is there, with the reasoning behind the less obvious choices.</span></li>
+
+<li id="architecture"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/architecture.md">Architecture</a>
+    <span>The file tree and what each part does.</span></li>
+
+<li id="vendored-libraries"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/vendored-libraries.md">Vendored libraries</a>
+    <span>The six bundled libraries, their versions and licences, and how they are updated.</span></li>
+
+<li id="maintaining"><a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/maintaining.md">Maintaining</a>
+    <span>For anyone changing the code: the traps to avoid.</span></li>
+
+</ul>
+
+<h2>In this package</h2>
+<p><code>config-sample.php</code> is an annotated example of
+<code>config.php</code>, with every key commented, useful when writing the
+file by hand instead of running the installer. <code>LICENSE</code> is the full
+AGPL-3.0 text.</p>
+
+<h2>Getting started</h2>
+<p>Upload the files, open the site in a browser, and follow the installer. It
+checks the server first and refuses to continue if something required is
+missing.</p>
+
+<footer>
+    <div>
+        AESBin is free software under the
+        <a href="https://github.com/SalvatoreNoschese/AESBin/blob/main/LICENSE">AGPL-3.0</a>.
+    </div>
+    <div>
+        Project home: <a href="https://github.com/SalvatoreNoschese/AESBin">AESBin on GitHub</a>.
+    </div>
+</footer>
+
+</main>
+</body>
+</html>

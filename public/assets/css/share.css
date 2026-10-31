@@ -1,0 +1,114 @@
+/* share.css — the public share page. Loaded after base.css and preview.css. */
+/* Right-click/drag shield over the <img>, see _guardedImageEl() in
+   preview.js. A deterrent, not protection. */
+.preview-media-guard {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+.preview-media-shield {
+    position: absolute;
+    inset: 0;
+    -webkit-touch-callout: none; /* iOS long-press "Save Image" */
+    -webkit-user-select: none;
+    user-select: none;
+}
+/* One card at a time with its footer right below, the two centred
+   together, as on the login and 404 pages (.card-body). */
+.sv-cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 20px 0;
+}
+#aesbin-viewer:not([hidden]) + .sv-cards {
+    display: none;
+}
+.aesbin-screen {
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+/* ── Directory name banner ── */
+.sv-dir-hdr {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    margin-bottom: 18px;
+}
+.sv-dir-hdr-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+/* A folder's or a lone file's name and, on a password link, the Exit
+   button beside it (share.js). */
+.sv-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sv-title-row > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+#sv-exit-btn {
+    flex: none;
+}
+
+/* The flash (fc-highlight, share.js): the link's anchor, a file card or
+   the folder banner, lights up and keeps its accent edge. The banner's
+   edge is qualified to beat its `border:` shorthand; a card's is in
+   base.css. */
+.sv-dir-hdr.fc-highlight {
+    border-color: var(--accent);
+}
+.fc-highlight {
+    animation: fc-flash 1.2s ease-out forwards;
+}
+@keyframes fc-flash {
+    0% {
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    60% {
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+    100% {
+        background: var(--bg2);
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+/* Clickable: resets the file anchor and custom sort in the URL fragment. */
+.sv-dir-hdr-clickable {
+    cursor: pointer;
+}
+.sv-dir-hdr-clickable:hover {
+    border-color: var(--accent);
+}
+
+/* A click on a file card makes it the link's anchor (share.js). */
+.file-card {
+    cursor: pointer;
+}
+
+/* Overrides preview.css: no fixed header here, so more height is free. */
+.preview-media {
+    max-height: 70vh;
+}
+
+/* Note under the share password field: informative, not a warning. */
+.aesbin-pw-note {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--text3);
+    text-align: center;
+}

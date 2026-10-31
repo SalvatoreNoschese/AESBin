@@ -1,0 +1,1157 @@
+/* base.css — loaded first by every page. Holds what more than one page
+   uses; page files (auth, share, privacy, 404, dashboard) load after it
+   and override without !important. */
+[hidden] {
+    display: none !important;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+:root {
+    /* The only place the palette is declared: page files must not redeclare
+       a token. */
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #7d8590;
+    --accent: #2f81f7;
+    --accent-h: #388bfd;
+    --link: #01b3f7;
+    --header-h: 52px;
+    /* One shade per status: borders and text of alerts, toasts, badges. */
+    --danger: #f85149;
+    --success: #3fb950;
+    --warning: #d29922;
+    /* Darker fills behind white text, which on --accent or --danger would
+       miss WCAG AA (4.5:1). Buttons brighten to the base shade on hover. */
+    --accent-fill: #1f6feb;
+    --danger-fill: #da3633;
+    /* Left-edge accents in the dashboard: owner-side log cards (.legend-owner in the
+       legend) and elevation-gated settings cards (.legend-gated). Owner is
+       a light silver: a category (your session, IP recorded), not an alarm,
+       so not the red of failures, the violet of the preview eye or the blue
+       of share visitors, and lighter than the grey text (--text2) and the
+       silver icons. Gated cards share it, being the same kind of mark (a
+       category, not an alarm) and keeping the orange free for the alert
+       dot (--warning), which they must not be confused with. */
+    --mark-owner: #c0c8d4;
+    --mark-gated: var(--mark-owner);
+    /* Icon hues (the "Icon colours" map below): bright enough on --bg2
+       and --bg3, distinct from each other. */
+    --hue-blue: #58a6ff;
+    --hue-sky: #79c0ff;
+    --hue-cyan: #39c5cf;
+    --hue-teal: #56d4bc;
+    --hue-green: #3fb950;
+    --hue-lime: #7ee787;
+    --hue-yellow: #e3b341;
+    --hue-sand: #e6c07b;
+    --hue-orange: #ffa657;
+    --hue-red: #ff7b72;
+    --hue-pink: #f778ba;
+    --hue-purple: #a371f7;
+    --hue-lavender: #d2a8ff;
+    --hue-silver: #b1bac4;
+    /* Password strength meter, weakest to strongest (paintPwStrength() in
+       helper.js). */
+    --pw-0: var(--danger);
+    --pw-1: #e36209;
+    --pw-2: var(--warning);
+    --pw-3: #1a7f37;
+    --pw-4: #2ea043;
+    --radius: 8px;
+    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'Roboto Mono', monospace;
+    --t: 0.15s ease;
+}
+html,
+body {
+    height: 100%;
+}
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+}
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+/* ── Icons ──
+   icon() in helpers.php and helper.js: a <use> into the inline sprite
+   (public/assets/img/icons.svg). One em square on the text baseline, drawn
+   in the surrounding colour, so an icon follows its button or label. */
+.icon-sprite {
+    display: none;
+}
+.ic {
+    display: inline-block;
+    width: 1.15em;
+    height: 1.15em;
+    vertical-align: -0.2em;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.ic-ok {
+    color: var(--success);
+}
+.ic-warn {
+    color: var(--warning);
+}
+.ic-err {
+    color: var(--danger);
+}
+.ic-muted {
+    color: var(--text3);
+}
+/* ── Icon colours ──
+   Each icon keeps one hue wherever it appears, as an emoji would: folders
+   gold, containers sky blue, download green, preview purple, edit orange,
+   trash red, and so on. The hue is set on the <use>, which passes it to the
+   icon it draws. A status mark (ic-ok, ic-warn, ic-err, ic-muted) and a
+   filled button keep the colour of their element instead: there the icon
+   is part of the message, or sits on a coloured background. */
+use[href="#i-link"],
+use[href="#i-external-link"],
+use[href="#i-share-2"],
+use[href="#i-info"],
+use[href="#i-upload"] {
+    color: var(--hue-blue);
+}
+use[href="#i-archive"],
+use[href="#i-search"],
+use[href="#i-arrow-down-a-z"],
+use[href="#i-monitor-smartphone"],
+use[href="#i-mail"],
+use[href="#i-database"],
+use[href="#i-user"],
+use[href="#i-file-code"] {
+    color: var(--hue-sky);
+}
+use[href="#i-repeat"],
+use[href="#i-undo-2"],
+use[href="#i-globe"],
+use[href="#i-timer"],
+use[href="#i-arrow-left-right"] {
+    color: var(--hue-cyan);
+}
+use[href="#i-house"],
+use[href="#i-quote"],
+use[href="#i-chart-line"],
+use[href="#i-chart-column"],
+use[href="#i-stethoscope"] {
+    color: var(--hue-teal);
+}
+use[href="#i-download"],
+use[href="#i-folder-plus"],
+use[href="#i-folder-tree"],
+use[href="#i-plus"],
+use[href="#i-lock-open"],
+use[href="#i-database-backup"],
+use[href="#i-file-image"],
+use[href="#i-check"] {
+    color: var(--hue-green);
+}
+use[href="#i-shield-check"] {
+    color: var(--hue-lime);
+}
+use[href="#i-folder"],
+use[href="#i-folders"],
+use[href="#i-lock"],
+use[href="#i-lock-keyhole"],
+use[href="#i-key-round"],
+use[href="#i-bell"],
+use[href="#i-star"],
+use[href="#i-lightbulb"],
+use[href="#i-hourglass"],
+use[href="#i-scroll-text"] {
+    color: var(--hue-yellow);
+}
+use[href="#i-package"],
+use[href="#i-file-archive"] {
+    color: var(--hue-sand);
+}
+use[href="#i-pencil"],
+use[href="#i-footprints"],
+use[href="#i-gauge"],
+use[href="#i-log-out"] {
+    color: var(--hue-orange);
+}
+use[href="#i-trash-2"],
+use[href="#i-calendar"],
+use[href="#i-alarm-clock"],
+use[href="#i-file-text"],
+use[href="#i-x"] {
+    color: var(--hue-red);
+}
+use[href="#i-folder-input"],
+use[href="#i-heart"],
+use[href="#i-eraser"],
+use[href="#i-file-video"] {
+    color: var(--hue-pink);
+}
+use[href="#i-eye"],
+use[href="#i-eye-off"],
+use[href="#i-bot"],
+use[href="#i-file-audio"] {
+    color: var(--hue-purple);
+}
+use[href="#i-copy"],
+use[href="#i-files"],
+use[href="#i-rectangle-ellipsis"] {
+    color: var(--hue-lavender);
+}
+use[href="#i-settings"],
+use[href="#i-sliders-horizontal"],
+use[href="#i-server"],
+use[href="#i-smartphone"],
+use[href="#i-wrench"],
+use[href="#i-file"],
+use[href="#i-unlink"] {
+    color: var(--hue-silver);
+}
+:is(.ic-ok, .ic-warn, .ic-err, .ic-muted) use,
+:is(.btn-primary, .btn-danger, .sort-btn.active) use {
+    color: inherit;
+}
+/* The brand mark next to the app name: the favicon, at text size. */
+.logo-mark {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: -0.25em;
+}
+/* ── No-JS overlay ──
+   From partials/document-start.php. Without JS, .page-wrap is hidden and
+   the overlay fills the viewport. The logo is part of the image because
+   script-blockers mangle separate nodes next to <noscript>. */
+.no-js-only {
+    display: none !important;
+}
+.no-js .js-required,
+.no-js .page-wrap {
+    display: none !important;
+}
+/* Fixed, so it is independent of body's flex-direction. display:flex
+   !important overrides the none !important from .no-js-only above. */
+.no-js .noscript-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--bg);
+    z-index: 9999;
+}
+.noscript-img {
+    width: 100%;
+    border-radius: 6px;
+}
+.noscript-msg {
+    color: var(--text2);
+    font-size: 0.9rem;
+    margin-top: 12px;
+    white-space: pre-line;
+}
+
+/* ── Card pages (login, recovery, share gate, 404) ── */
+.card-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 20px;
+    overflow-y: auto;
+}
+/* The flex item of .card-body is .page-wrap (document-start.php), not the
+   card inside it. Given no width, it took its content's: the card's
+   width:100% then meant "as wide as what I hold", and the panel changed
+   size between the password step, the code step and an error message.
+   Sized here, the card is one width on every step: the screen's on a phone,
+   400px beyond. margin:auto keeps the form scrollable above the keyboard
+   (Firefox mobile). */
+.card-body > .page-wrap {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+}
+/* The panel of a card page; the no-JS overlay's card is the same one,
+   centred. */
+.card,
+.noscript-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 400px;
+}
+.noscript-card {
+    text-align: center;
+}
+/* A link home (logo_link()), dressed as the heading it replaces. */
+.card-logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: block;
+    width: fit-content;
+    margin: 0 auto 24px;
+    color: inherit;
+}
+.card-logo:hover {
+    text-decoration: none;
+}
+.card-hint {
+    color: var(--text2);
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+}
+
+/* ── Form elements ── */
+.field-label {
+    display: block;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text2);
+    margin: 12px 0 4px;
+}
+.field-input {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.93rem;
+    outline: none;
+    transition: border-color var(--t);
+}
+.field-input:focus {
+    border-color: var(--accent);
+}
+/* Multi-line field (the recovery phrase) */
+.field-textarea {
+    resize: vertical;
+    min-height: 88px;
+    font-family: inherit;
+}
+/* Checkbox with its label on one row */
+.field-check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--text2);
+    cursor: pointer;
+    margin-bottom: 6px;
+}
+.field-check-row input[type="checkbox"] {
+    margin-top: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.hint-sm {
+    font-size: 0.78rem;
+    color: var(--text2);
+    margin-top: 2px;
+    display: block;
+}
+/* Masks a type="text" field like a password field; applied only where
+   supported, see initPasswordToggles() in helper.js. */
+.pw-masked {
+    -webkit-text-security: disc;
+}
+/* Password show/hide toggle (shared, helper.js) */
+.pw-field {
+    position: relative;
+    display: block;
+}
+.pw-field input {
+    padding-right: 38px;
+}
+.pw-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 4px;
+    /* The icon draws in this colour; the UA's dark button text would
+       vanish on the dark field. */
+    color: var(--text);
+    display: inline-flex;
+    opacity: 0.7;
+}
+.pw-toggle:hover {
+    opacity: 1;
+}
+/* Password strength meter (pw_meter() in helpers.php, installer and
+   recovery page; paintPwStrength() in helper.js). */
+.pw-meter {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+.pw-meter-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 2px;
+    transition: width 0.3s, background 0.3s;
+}
+.pw-meter-label {
+    font-size: 0.75rem;
+    color: var(--text3);
+    margin-top: 2px;
+}
+.totp-secret-box {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    word-break: break-all;
+    text-align: center;
+    color: var(--text2);
+    margin: 8px 0;
+    user-select: all;
+}
+.copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text2);
+    padding: 3px 9px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+.copy-btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+}
+/* An inset box-shadow covers the light autofill background. Two rules,
+   because an engine that knows only one of :autofill and :-webkit-autofill
+   drops a selector list containing both. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--bg2) inset;
+    box-shadow: 0 0 0 1000px var(--bg2) inset;
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--text);
+}
+input:autofill,
+textarea:autofill {
+    box-shadow: 0 0 0 1000px var(--bg2) inset;
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--text);
+}
+/* ── ALTCHA widget ──
+   The stylesheet the ALTCHA bundle injects themes itself via light-dark();
+   color-scheme:dark selects the dark variants. Only layout here.
+   --altcha-max-width is one of the widget's documented variables. */
+altcha-widget {
+    display: block;
+    margin: 12px 0 0;
+    color-scheme: dark;
+    --altcha-max-width: 100%;
+}
+
+/* ── Buttons ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+    transition: background var(--t), opacity var(--t);
+    white-space: nowrap;
+}
+.btn:hover {
+    text-decoration: none;
+}
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.btn-primary {
+    background: var(--accent-fill);
+    color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--accent);
+}
+.btn-ghost {
+    background: var(--bg3);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.btn-ghost:hover:not(:disabled) {
+    background: var(--border);
+}
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.82rem;
+}
+/* Active state for the inline-preview toggle (setPrevIcon in preview.js).
+   !important beats Firefox Android's native :focus/:active styling on tap. */
+.btn-ghost.active {
+    background-color: var(--accent-fill) !important;
+    color: #fff;
+    border-color: var(--accent-fill);
+}
+.btn-full {
+    width: 100%;
+    margin-top: 14px;
+}
+/* Keyboard focus: one look for every button, whatever its class (.btn,
+   the header and card icons, dialog close, copy, sort, the language
+   picker) and for anything acting as one (role="button", the share
+   page's folder box). Only with the keyboard: a tap or a click shows
+   nothing. */
+button:focus-visible,
+.btn:focus-visible,
+[role="button"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Alerts ── */
+.alert {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.87rem;
+    margin-top: 12px;
+}
+.alert-danger {
+    background: #2d1117;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+.alert-success {
+    background: var(--bg);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+.alert-warning {
+    background: #1e1610;
+    border: 1px solid var(--warning);
+    color: var(--warning);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text2);
+}
+
+/* Honeypot wrapper: hides bots' traps, visually and from AT. */
+.hp-wrap {
+    display: none !important;
+}
+/* An empty list's message. */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+    font-size: 0.93rem;
+}
+
+/* ── File cards (dashboard and share page) ── */
+/* Sort bar, built by both dashboard.php and share.js. */
+.sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.sort-label {
+    font-size: 0.78rem;
+    color: var(--text2);
+    flex-shrink: 0;
+}
+.sort-btn {
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.sort-btn:hover {
+    background: var(--bg3);
+    color: var(--text);
+}
+.sort-btn.active {
+    background: var(--accent-fill);
+    color: #fff;
+    border-color: var(--accent-fill);
+}
+.sort-dir {
+    margin-left: 4px;
+    font-weight: 700;
+}
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+.file-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color var(--t);
+    -webkit-tap-highlight-color: transparent;
+}
+/* Hover effects only on devices with a real pointer */
+@media (hover: hover) {
+    .file-card:hover {
+        border-color: var(--accent);
+    }
+}
+.fc-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.fc-name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+/* The icon hangs to the left of the name, which wraps beside it: a long
+   name breaks anywhere rather than leave the icon alone on a line, and every
+   line of it starts at the same edge. */
+.fc-name .fname {
+    position: relative;
+    padding-left: 1.5em;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+.fc-name .fname > .ic:first-child {
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+}
+.fc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-top: 2px;
+}
+.fc-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+/* Checksum panel, see renderHashDetails() in helper.js. */
+.fc-hashes {
+    margin-top: 6px;
+    font-size: 0.78rem;
+}
+/* Arrow on the left, icon after the text: one look for every folded
+   section (.md-help in preview.css; .upload-formats-helper and
+   .about-credits in dashboard.css). */
+.fc-hashes summary {
+    cursor: pointer;
+    color: var(--text2);
+    user-select: none;
+}
+.fc-hash-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0;
+}
+.fc-hash-box {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: var(--bg2);
+}
+.fc-hash-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+.fc-hash-label {
+    font-weight: 600;
+    color: var(--text2);
+    white-space: nowrap;
+}
+.fc-hash-val {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    word-break: break-all;
+    line-height: 1.4;
+}
+.fc-hash-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text2);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.fc-hash-vt {
+    display: inline-block;
+    font-size: 0.8rem;
+}
+/* The card's rules (.fc-actions, .fc-preview) keep 10px on each side:
+   the card's gap above, padding below (for the preview, the spacing of
+   the block that opens it, in preview.css). The 10px below also holds
+   the dashboard's count badges, which rise above the buttons. */
+.fc-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+/* No height cap or scroller here: each preview type (.preview-media, the
+   PDF wrapper, pre.line-numbers) caps and scrolls itself, and a second cap
+   would mean two scrollbars. */
+.fc-preview {
+    border-top: 1px solid var(--border);
+}
+/* A card brought to the eye (fc-highlight: a search result, a log link,
+   a share link's anchor): the accent edge on both pages, the motion in
+   each page's file. Qualified so it beats .file-card's `border:`. */
+.file-card.fc-highlight {
+    border-color: var(--accent);
+}
+/* Descriptions: of a file (its card) or of a shared folder (its banner). */
+.sv-dir-desc,
+.file-sub-desc {
+    /* Descriptions are multi-line: keep their newlines. */
+    white-space: pre-line;
+    margin: 4px 0 0;
+    font-size: 0.76rem;
+    color: var(--text2);
+}
+/* Description mini-markdown (fmtDesc() in helper.js). .desc-quote is a
+   block-styled <span>, not a <blockquote>. */
+.desc-code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 5px;
+}
+.desc-quote {
+    display: block;
+    margin: 2px 0;
+    padding-left: 10px;
+    border-left: 3px solid var(--border);
+    opacity: 0.85;
+}
+
+/* ── Share page layout ── */
+.aesbin-page {
+    min-height: 100vh;
+}
+.aesbin-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    /* Aligned with .aesbin-container (980px, 24px padding), as .app-header. */
+    padding: 0 max(16px, calc((100% - 980px) / 2 + 24px));
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.aesbin-header-logo {
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    color: inherit;
+}
+.aesbin-header-logo:hover {
+    text-decoration: none;
+}
+.aesbin-header-right {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.aesbin-container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px;
+}
+@media (max-width: 680px) {
+    .aesbin-container {
+        padding: 12px;
+    }
+}
+
+/* ── Language dropdown ── */
+/* Language select with the chosen flag inside it (lang_select() in
+   helpers.php). The image sits over the select's left padding and lets
+   clicks through to it. */
+.lang-flag-sel {
+    position: relative;
+}
+.lang-flag-sel-block {
+    display: block;
+}
+.lang-flag {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 18px;
+    height: 12px;
+    transform: translateY(-50%);
+    border-radius: 2px;
+    /* White stripes stay visible on a light background. */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+.lang-flag:not([hidden]) + select {
+    padding-left: 36px;
+}
+/* lang-select.js replaces the select with a button and a list that can
+   show the flags. The select stays, hidden, holding the value. */
+.lang-dd-ready > select,
+.lang-dd-ready > .lang-flag {
+    display: none;
+}
+.lang-dd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+.lang-dd-btn::after {
+    /* The chevron the native select drew. */
+    content: "";
+    margin-left: auto;
+    padding-left: 6px;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    width: 6px;
+    height: 6px;
+    transform: translateY(-2px) rotate(45deg);
+    opacity: 0.7;
+}
+/* Room for the chevron, whatever padding the select's class gives. */
+.lang-flag-sel .lang-dd-btn {
+    padding-right: 10px;
+}
+.lang-flag-sel-block .lang-dd-btn {
+    width: 100%;
+}
+.lang-dd-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 1000;
+    min-width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 4px;
+    list-style: none;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+/* In a header, at the right edge: open leftwards. */
+.lang-flag-sel:not(.lang-flag-sel-block) .lang-dd-list {
+    left: auto;
+    right: 0;
+}
+.lang-dd-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+}
+.lang-dd-opt:hover,
+.lang-dd-opt:focus {
+    background: var(--bg3);
+}
+.lang-dd-opt[aria-selected="true"] {
+    color: var(--accent);
+    font-weight: 600;
+}
+.lang-dd-flag {
+    flex-shrink: 0;
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.page-lang-sel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 4px 0 4px 9px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+.page-lang-sel:hover {
+    border-color: var(--accent);
+}
+
+/* ── Footer ── */
+.page-footer {
+    padding: 24px max(16px, calc((100% - 980px) / 2 + 24px)) 16px;
+    font-size: 0.73rem;
+    color: var(--text3);
+}
+.page-footer-center {
+    /* Single-card pages (login, recovery, 404) have no 980px column to
+       align with. */
+    padding-inline: 16px;
+    text-align: center;
+}
+.page-footer-center .page-footer-row {
+    justify-content: center;
+}
+.page-footer-row {
+    /* © brand, then the nav links. Row gap matches the nav's 8px gap. */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+}
+/* Bullet before each nav item, whichever of brand, privacy, contact are shown. */
+.page-footer-nav > *::before {
+    content: "•";
+    color: var(--text3);
+    margin-right: 8px;
+}
+.page-footer-brand {
+    color: var(--text3);
+    white-space: nowrap;
+    transition: color var(--t);
+}
+.page-footer-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+}
+.page-footer-privacy-link,
+.page-footer-contact-link {
+    display: inline-flex;
+    align-items: center;
+}
+/* The contact link is either the <a> itself (a URL) or an <a> inside a
+   <span> (the obfuscated mailto:). */
+.page-footer-privacy-link,
+a.page-footer-contact-link,
+.page-footer-contact-link a {
+    color: var(--text3);
+    transition: color var(--t);
+}
+.page-footer-brand:hover,
+.page-footer-privacy-link:hover,
+a.page-footer-contact-link:hover,
+.page-footer-contact-link a:hover {
+    color: var(--link);
+    text-decoration: none;
+}
+
+/* ── "Back to top" button ── */
+.aesbin-gotop {
+    position: fixed;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    /* Set by gotop.js as the page scrolls; a variable, not an inline
+       opacity, so the :hover rule below can still override it. */
+    opacity: var(--gotop-opacity, 0);
+    pointer-events: none;
+    z-index: 1000;
+    transition: opacity 0.3s, transform 0.3s, background 0.15s;
+    /* No tap rectangle on touch screens: the button is round and has its
+       own hover and focus styles. */
+    -webkit-tap-highlight-color: transparent;
+}
+.aesbin-gotop.is-interactive {
+    pointer-events: auto;
+}
+/* Only where there is a real hover: on a touch screen the tapped button
+   would stay raised until the next tap elsewhere. */
+@media (hover: hover) {
+    .aesbin-gotop.is-interactive:hover {
+        background: var(--accent-h);
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+.aesbin-gotop-arrow {
+    width: 9px;
+    height: 9px;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    transform: rotate(-45deg);
+    margin-top: 3px;
+}
+
+/* ── Tooltip bubble on touch screens (.has-tip, see helper.js) ── */
+.tip-bubble {
+    position: absolute;
+    z-index: 1000;
+    max-width: min(280px, calc(100vw - 16px));
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--bg3);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    font-size: 0.8rem;
+    line-height: 1.35;
+    pointer-events: none;
+}
+.has-tip:not(a, button) {
+    cursor: help;
+}
+/* A long press on a button or link with a tip opens the tip, not the browser's text
+   selection or iOS callout menu. */
+a.has-tip,
+button:has(.has-tip),
+a:has(.has-tip) {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ── Server requirements list (installer and dashboard) ── */
+.reqs-env {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--bg2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 0 0 12px;
+    word-break: break-word;
+}
+/* Heading over each half of the list: labels it, deliberately quiet. */
+.reqs-group {
+    margin: 14px 0 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+}
+.reqs-group:first-of-type {
+    margin-top: 10px;
+}
+/* The explanation under a failed check, on its own line so the list still
+   scans as a list of names. */
+.reqs-hint {
+    display: block;
+    color: var(--text3);
+    font-size: 0.82rem;
+    margin-left: 1.6em;
+}
+/* The directive a failing check wants pasted somewhere: monospace, on
+   its own line, so it reads as something to copy. */
+.reqs-detail {
+    display: block;
+    margin: 4px 0 0 1.6em;
+    padding: 4px 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    /* Scrolls sideways instead of wrapping: a path broken mid-token reads
+       as two things. */
+    white-space: pre;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    /* One tap selects the whole string. */
+    user-select: all;
+}

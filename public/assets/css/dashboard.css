@@ -1,0 +1,2037 @@
+/* dashboard.css — the dashboard (app/views/dashboard.php). Loaded after
+   base.css and preview.css. Phone and desktop variants sit next to the
+   rule they adapt: max-width: 680px for a phone, min-width: 681px beyond. */
+
+/* ── Form elements ── */
+/* Red inline note without an .alert box (CSP forbids inline style=""). */
+.text-danger {
+    color: var(--danger);
+}
+/* A disabled checkbox dims its label too. */
+.field-check-row:has(input:disabled) {
+    opacity: 0.5;
+    cursor: default;
+}
+.field-check-row input[type="checkbox"]:disabled {
+    cursor: default;
+}
+.required-mark {
+    color: var(--danger);
+    margin-left: 2px;
+}
+select.field-input {
+    cursor: pointer;
+}
+.input-sm {
+    max-width: 100px;
+}
+
+/* ── Buttons ── */
+.btn-danger {
+    background: var(--danger-fill);
+    color: #fff;
+}
+.btn-danger:hover:not(:disabled) {
+    background: var(--danger);
+}
+.btn-icon {
+    position: relative;
+    background: transparent;
+    color: var(--text2);
+    padding: 5px 8px;
+    border: none;
+    font-size: 0.92rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background var(--t), color var(--t);
+}
+/* Bigger touch targets on a phone. */
+@media (max-width: 680px) {
+    .btn-icon {
+        padding: 7px 10px;
+        font-size: 1rem;
+    }
+}
+/* Only where there is a real hover: on a touch screen the last tapped
+   button would keep the highlight until the next tap elsewhere. */
+@media (hover: hover) {
+    .btn-icon:hover,
+    .dlg-close:not(.btn):hover {
+        background: var(--bg3);
+        color: var(--text);
+    }
+}
+/* Active state for the inline-preview toggle (setPrevIcon() in preview.js). */
+.btn-icon.active {
+    color: var(--accent);
+}
+/* Danger-state text: search errors, icon buttons, inline labels,
+   tree/preview messages. After .btn-icon, whose colour it replaces. */
+.search-error,
+.btn-icon-danger,
+.tree-error,
+.preview-error {
+    color: var(--danger);
+}
+/* Count badge on an icon button's corner: the header trash icon
+   (updateTrashBadge()) and the share figures on file and folder buttons
+   (countBadge()), both in dashboard.js. */
+.icon-badge {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 8px;
+    background: var(--bg3);
+    color: var(--accent);
+    border: 1px solid var(--bg2);
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 15px;
+}
+/* Share figures on file and folder buttons. On a phone these buttons are
+   icon-only and wide, so the badge is anchored to the icon (the button's
+   centre), just above its top-right edge; the button's own corner would
+   leave it floating far from the icon. From 680px, where the buttons
+   carry a label, it moves to the corner (see the desktop block below). */
+.fc-actions .icon-badge,
+.tree-actions .icon-badge {
+    top: 0;
+    right: auto;
+    left: calc(50% + 4px);
+    transform: translateY(-30%);
+}
+@media (min-width: 681px) {
+    .fc-actions .icon-badge,
+    .tree-actions .icon-badge {
+        left: auto;
+        right: 0;
+        transform: translate(45%, -50%);
+    }
+    /* Tree rows are compact and their buttons unboxed: less rise, so the
+       badge stays inside its row. */
+    .tree-actions .icon-badge {
+        transform: translate(60%, -20%);
+    }
+}
+/* A button's text beside its icon (file, folder and link actions): icons
+   only up to 680px, where a row of them would wrap, text from 681px. */
+.btn-label {
+    display: none;
+    font-size: 0.8rem;
+}
+@media (min-width: 681px) {
+    .btn-label {
+        display: inline;
+    }
+}
+/* A button that reads as a link: styled like <a> in base.css, underlined
+   only on hover or keyboard focus. */
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--link);
+    font-size: inherit;
+    cursor: pointer;
+}
+.btn-link:hover,
+.btn-link:focus-visible {
+    text-decoration: underline;
+}
+.link-inline {
+    font-size: 0.82rem;
+    color: var(--accent);
+    text-decoration: underline;
+}
+button.link-inline {
+    background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+}
+.link-inline:hover {
+    color: var(--accent-h);
+}
+.link-inline.link-pending {
+    color: var(--text2);
+    text-decoration: none;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.btn-retry {
+    margin-top: 8px;
+}
+
+/* ── Page layout ── */
+.app-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+#main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    flex: 1;
+}
+@media (max-width: 680px) {
+    #main {
+        padding: 12px;
+    }
+}
+.view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.view-actions {
+    display: flex;
+    gap: 8px;
+}
+/* Breadcrumb above a view. */
+.app-nav {
+    padding: 12px 0 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 2.2rem;
+}
+/* The home crumb uses .nav-link or .nav-current; it has no class of its own. */
+.nav-sep {
+    color: var(--text2);
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+.nav-current {
+    color: var(--text3);
+    cursor: default;
+    user-select: none;
+    padding: 2px 4px;
+}
+.nav-link {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+    transition: background var(--t);
+}
+.nav-link:hover {
+    background: var(--bg3);
+}
+
+/* ── App header ── */
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Header content aligned with #main (980px, 24px padding, centred);
+       the bar itself is full-width. */
+    padding: 0 max(16px, calc((100% - 980px) / 2 + 24px));
+    height: var(--header-h);
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    flex-shrink: 0;
+}
+.app-logo {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    padding: 4px 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: transform var(--t);
+}
+/* Not underlined on hover (the global a:hover is, and on touch it sticks
+   after a tap): the only underline is the dotted one below. */
+.app-logo:hover {
+    text-decoration: none;
+}
+@media (hover: hover) {
+    .app-logo:hover {
+        transform: scale(1.05);
+    }
+}
+/* On the home and inside its containers and folders (showView() in
+   dashboard.js): the name, not the icon, dotted. */
+.app-logo[aria-current] .app-logo-text {
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+}
+.app-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+/* Header buttons: one height, content centred, with or without a label
+   (the touch size on a phone, below). A box in the look of a .btn-ghost
+   when lit: on the page open (showView() in dashboard.js), on the search
+   button while its bar is open (bindSearch()) and on hover. The border is
+   there, clear, when unlit too, so lighting a button does not shift its
+   neighbours. */
+.app-header-right .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    border: 1px solid transparent;
+}
+.app-header-right .btn-icon[aria-current="page"],
+.app-header-right .btn-icon[aria-expanded="true"] {
+    background: var(--bg3);
+    border-color: var(--border);
+    color: var(--text);
+}
+@media (hover: hover) {
+    .app-header-right .btn-icon:hover {
+        border-color: var(--border);
+    }
+}
+@media (max-width: 680px) {
+    .app-header-right .btn-icon {
+        height: 34px;
+    }
+}
+/* Header button labels: icon-only until fitHeader() finds the room for them
+   (hdr-labels, "Header that does not fit" below). */
+.header-btn-label {
+    display: none;
+    font-size: 0.82rem;
+}
+/* ── Header that does not fit ──
+   fitHeader() in dashboard.js measures the header, so each language gets
+   the room its labels need. All labels or none (HEADER_STEPS): with room,
+   hdr-labels shows every button's label, Logout's included; without,
+   every button is an icon. Only if the icons still overflow do they move
+   closer (hdr-tight), then get narrower (hdr-tighter, 320px phones). */
+.app-header.hdr-labels .app-header-right .btn-icon {
+    gap: 5px;
+    padding: 5px 10px;
+}
+/* On one line: wrapped, a label would fit by growing taller, and the
+   measuring would take that for room. */
+.app-header.hdr-labels .header-btn-label {
+    display: inline;
+    white-space: nowrap;
+}
+.app-header.hdr-tight .app-header-right {
+    gap: 2px;
+}
+.app-header.hdr-tighter .app-header-right .btn-icon {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+/* A dot on a header icon while something behind it needs attention: a
+   failing requirement or unsaved changes (Settings), a link about to
+   expire (links). The same dot follows the title of the Settings card it
+   is about, a closed <details> card's included. */
+#btn-settings:is(.has-alert, .has-unsaved)::after,
+#btn-shares-nav.has-alert::after,
+.settings-card:is(.is-unsaved, .is-flagged) > h3::after,
+.settings-card:is(.is-unsaved, .is-flagged) > summary > span::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--warning);
+    box-shadow: 0 0 0 2px var(--bg2);
+}
+.settings-card:is(.is-unsaved, .is-flagged) > h3::after,
+.settings-card:is(.is-unsaved, .is-flagged) > summary > span::after {
+    position: static;
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+/* Search bar and results panel. */
+/* Search bar and results panel, directly below the header. The dock is
+   what sticks: were only the bar sticky, results opened from further down
+   the page would render at the top, out of view. */
+.search-dock {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 40;
+    flex-shrink: 0;
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    padding: 7px 14px;
+    background: var(--bg2);
+    /* no double border with the header */
+    border-bottom: 1px solid var(--border);
+}
+.search-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.search-results-panel {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    max-height: 40vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.search-result-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+    transition: background var(--t);
+    cursor: pointer;
+}
+.search-result-row:last-child {
+    border-bottom: none;
+}
+.search-result-row:hover {
+    background: var(--bg3);
+}
+.search-name-text mark {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+    color: var(--text);
+    border-radius: 2px;
+}
+/* Breadcrumb column: when it does not fit, the ancestors (search-path)
+   shrink and ellipsise, never the name. */
+.search-crumbs {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    white-space: nowrap;
+}
+/* margin-right, not a trailing space: a trailing space in an inline
+   element collapses before the next element, and a margin survives the
+   ellipsis. */
+.search-path {
+    min-width: 0;
+    margin-right: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text2);
+    opacity: 0.75;
+}
+.search-name-text {
+    flex: 0 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.search-id {
+    flex-shrink: 0;
+    padding-left: 8px;
+    font-size: 0.75rem;
+    color: var(--text2);
+    white-space: nowrap;
+}
+.search-empty,
+.search-more,
+.search-loading,
+.search-error {
+    padding: 12px;
+    font-size: 0.84rem;
+    color: var(--text2);
+    text-align: center;
+}
+@media (min-width: 681px) {
+    .search-bar,
+    .search-results-panel {
+        border-left: 1px solid var(--border);
+        border-radius: 0 0 0 var(--radius);
+    }
+}
+
+/* ── Toast notifications ── */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 16px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 300px;
+    pointer-events: none;
+}
+.toast {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.2s, transform 0.2s;
+}
+.toast-error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.toast-success {
+    border-color: var(--success);
+    color: var(--success);
+}
+.toast-warning {
+    border-color: var(--warning);
+    color: var(--warning);
+}
+@media (max-width: 680px) {
+    .toast-container {
+        left: 16px;
+        max-width: none;
+    }
+}
+
+/* ── Modals ── */
+.dlg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+.modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 460px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.modal-header h3 {
+    font-size: 0.95rem;
+}
+/* The header's ✕ only. Footer "Cancel" buttons carry .dlg-close too (it is
+   what closes the modal) but are .btn: without :not(.btn) this rule, later
+   than base.css, would strip their border and background and enlarge the
+   text, unlike the same button in the elevation and input modals. */
+.dlg-close:not(.btn) {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.modal-body {
+    padding: 18px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.modal-footer {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+.modal-wide {
+    max-width: 680px;
+}
+/* Modal utilities */
+.modal-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 90%;
+}
+/* ID in the modal footer, left of Cancel/Save. Margins reset (the
+   .hint-sm/.settings-hint ones are for stacked text); margin-right:auto
+   pins it left without changing .modal-footer's justify-content. */
+.modal-footer-note {
+    margin: 0 auto 0 0;
+    align-self: center;
+    min-width: 0; /* or a long message pushes the buttons onto their own row */
+    text-wrap: balance; /* breaks after the full stop, not mid-clause */
+}
+/* confirmModal() sets this with textContent: pre-line keeps the blank line
+   between a question and the warning under it. */
+#dlg-ask-msg {
+    white-space: pre-line;
+}
+/* File and folder info: name, extension, content editor, description. */
+.editor-textarea {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    resize: vertical;
+    background: var(--bg);
+    line-height: 1.6;
+}
+/* Create/edit file modal. .modal-body scrolls, so no tall min-height. */
+.editor-textarea-compact {
+    min-height: 160px;
+}
+.editor-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    margin-bottom: 6px;
+}
+.fileinfo-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fileinfo-name-wrap .field-input {
+    font-family: var(--font-mono);
+    flex: 1;
+}
+.fileinfo-ext-badge {
+    flex-shrink: 0;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    color: var(--text2);
+    white-space: nowrap;
+    cursor: default;
+}
+/* Two classes to override .field-input's full width. */
+.field-input.fileinfo-ext-sel {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 50px;
+    max-width: 150px;
+}
+/* Encoding and line-ending selects under the content editor. */
+.fileinfo-format {
+    margin-top: 8px;
+}
+/* Their explanation, folded. Two classes: the look of the upload helper
+   without the margins it has on the upload panel. */
+.upload-formats-helper.fileinfo-format-help {
+    margin: 6px 0 0;
+}
+/* "This file is no longer Windows-1252…": the menus have followed the text
+   away from the file's format (updateFormatOptions() in dashboard.js). */
+.fileinfo-format-note {
+    flex: 0 0 100%;
+    margin: 0;
+    color: var(--warning);
+}
+/* Toolbar and counter share one row. */
+.desc-toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0 4px;
+}
+.desc-toolbar {
+    display: flex;
+    gap: 4px;
+}
+.desc-fmt {
+    min-width: 32px;
+    padding: 2px 8px;
+}
+.desc-counter {
+    margin-left: auto;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--text3);
+}
+.desc-counter.desc-counter-warn {
+    color: var(--warning);
+}
+.desc-counter.desc-counter-max {
+    color: var(--danger);
+    font-weight: 600;
+}
+.field-textarea.at-limit {
+    border-color: var(--danger);
+}
+/* Move tree */
+.move-tree {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+.move-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    transition: background var(--t);
+}
+.move-tree-item:last-child {
+    border-bottom: none;
+}
+.move-tree-item:hover {
+    background: var(--bg3);
+}
+.move-tree-item.selected {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+}
+.move-tree-dir {
+    padding-left: 32px;
+    font-size: 0.84rem;
+}
+.move-tree-dir.selected {
+    color: var(--accent);
+}
+.move-tree-head {
+    cursor: default;
+    background: var(--bg2);
+    font-weight: 600;
+    color: var(--text2);
+}
+.move-tree-head:hover {
+    background: var(--bg2);
+}
+/* Share dialog. */
+/* Which item the dialog is about. */
+.shr-target-name {
+    font-weight: 600;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+/* Actions on the share itself, in their own row under the url/key fields.
+   Only field actions (open, copy) sit beside a field. */
+.shr-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+/* The buttons stay beside the input and wrap only when both cannot fit. */
+.shr-url-row {
+    flex-wrap: wrap;
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.shr-url-row .field-input {
+    flex: 1;
+    min-width: 120px;
+    font-size: 0.74rem;
+    font-family: var(--font-mono);
+    padding: 5px 8px;
+}
+/* The toggle owns its separator, so create and result dialogs space
+   it the same. */
+.split-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text2);
+    margin-top: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted var(--border);
+    cursor: pointer;
+    user-select: none;
+}
+.split-toggle input {
+    cursor: pointer;
+}
+/* Space between the split-key checkbox and the expiry/password recap. */
+.shr-result-meta {
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+.dlg-lnk-hint {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+.dlg-lnk-note {
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+.shr-existing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.shr-existing-item {
+    border-top: 1px dotted var(--border);
+    padding: 10px 0 5px;
+}
+/* The toggle above already draws the top border. */
+.shr-existing-item:first-child {
+    border-top: none;
+}
+.shr-divider {
+    border-color: var(--border);
+    margin-bottom: 12px;
+}
+
+/* ── Home ── */
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.home-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    overflow: hidden;
+}
+.home-card-full {
+    grid-column: 1 / -1;
+}
+.home-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+.home-card-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+.home-card-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex: 1;
+}
+/* font-family: inherit is needed: base.css sets the font on body only,
+   so a <button> would get the UA font. */
+.home-card-action {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 7px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all var(--t);
+}
+.home-card-action:hover {
+    background: var(--bg3);
+    color: var(--text);
+    border-color: var(--accent);
+}
+.home-empty {
+    font-size: 0.84rem;
+    color: var(--text2);
+    padding: 8px 0;
+}
+.home-loading {
+    text-align: center;
+    padding: 32px;
+    color: var(--text2);
+}
+@media (max-width: 680px) {
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-card-full {
+        grid-column: 1;
+    }
+}
+/* Filesystem tree card. */
+.tree-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.tree-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 370px; /* ~10 rows of 37px each, then scroll */
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg2);
+}
+/* Tree scrollbar: always visible and themed. */
+.tree-list::-webkit-scrollbar {
+    width: 6px;
+}
+.tree-list::-webkit-scrollbar-track {
+    background: var(--bg2);
+    border-radius: 3px;
+}
+.tree-list::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+}
+.tree-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-h);
+}
+.tree-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.87rem;
+    transition: background var(--t);
+}
+.tree-row:last-child {
+    border-bottom: none;
+}
+.tree-container {
+    background: var(--bg2);
+    font-weight: 500;
+}
+.tree-dir {
+    background: var(--bg);
+    padding-left: 6px;
+}
+.tree-container:hover,
+.tree-dir:hover {
+    background: var(--bg3);
+}
+.tree-icon {
+    flex-shrink: 0;
+}
+.tree-indent {
+    width: 8px;
+    flex-shrink: 0;
+    border-left: 2px solid var(--border);
+    height: 1em;
+    margin-left: 4px;
+}
+.tree-name {
+    flex: 1;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tree-name:hover {
+    text-decoration: underline;
+    color: var(--accent);
+}
+.tree-new-container {
+    margin-top: 4px;
+    align-self: flex-start;
+}
+.tree-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.tree-msg {
+    padding: 12px;
+    color: var(--text2);
+    font-size: 0.85rem;
+}
+/* System card. */
+.fs-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 0.87rem;
+    border-bottom: 1px solid var(--border);
+}
+/* :last-of-type, not :last-child: the last child is the "settings →"
+   button. All rows and the optional .fs-quota-bar are divs, and the bar
+   sits between the first two rows, so the last div is the last row. */
+.fs-stat-row:last-of-type {
+    border-bottom: none;
+}
+.fs-has-quota {
+    border-bottom: none;
+}
+.fs-stat-label {
+    color: var(--text2);
+}
+.fs-stat-val {
+    font-weight: 500;
+}
+.fs-quota-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    margin: 6px 0 4px;
+    overflow: hidden;
+}
+.fs-quota-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s;
+}
+
+/* ── Files view ── */
+.drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--t), background var(--t);
+    margin-bottom: 18px;
+    color: var(--text2);
+    font-size: 0.88rem;
+}
+.drop-zone.drag-over {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+@media (hover: hover) {
+    .drop-zone:hover {
+        border-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+}
+.drop-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 4px;
+}
+.upload-meta-note {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--text3);
+}
+.upload-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    color: var(--text2);
+    cursor: pointer;
+}
+.upload-formats-helper {
+    margin-bottom: 18px;
+    margin-top: -10px;
+    font-size: 0.83rem;
+    color: var(--text2);
+}
+/* Arrow on the left, icon after the text: one look for every folded
+   section (.fc-hashes in base.css, .md-help in preview.css, .about-credits). */
+.upload-formats-helper summary,
+.about-credits summary {
+    cursor: pointer;
+    color: var(--text2);
+    user-select: none;
+}
+.upload-formats-helper p {
+    margin: 8px 0 0;
+}
+.upload-formats-helper strong {
+    color: var(--text);
+}
+/* Under the upload helper: a note, not an alert, but marked so it is not
+   read past as more help text. */
+.dir-shared-note {
+    margin: -8px 0 18px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--warning);
+    border-radius: 4px;
+    background: var(--bg2);
+    font-size: 0.83rem;
+    color: var(--text2);
+}
+.upload-progress {
+    margin-bottom: 14px;
+}
+.upload-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 0.85rem;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+}
+.upload-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.upload-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    width: 100px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.upload-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0;
+    transition: width 0.2s;
+}
+.upload-status {
+    flex-shrink: 0;
+    min-width: 34px;
+    text-align: right;
+    font-size: 0.8rem;
+}
+/* A refused file: the bar must not read as a finished upload, and the row
+   stays until the next batch (handleFiles() in dashboard.js). */
+.upload-item-failed .upload-bar-fill {
+    width: 100%;
+    background: var(--danger);
+}
+.upload-item-failed .upload-status {
+    color: var(--danger);
+}
+/* File and folder cards (the shared card is in base.css). */
+.dir-card {
+    border-left: 3px solid var(--accent);
+}
+.fname-count {
+    font-size: 0.8rem;
+    color: var(--text2);
+    font-weight: 400;
+}
+/* The path takes the whole line, so size/type/date always start a new
+   one whatever the screen width or path length. */
+.fc-meta-path {
+    flex: 1 1 100%;
+    overflow-wrap: anywhere;
+}
+/* Separates a trashed file's name and description from its origin and size.
+   10px each side of the rule, as for the card's own rules (base.css): above,
+   .fc-main's 4px gap plus 6px; below, 8px plus the path label's 2px margin. */
+.fc-meta-divided {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 6px;
+}
+.path-label {
+    font-size: 0.73rem;
+    margin-top: 2px;
+}
+/* Trash: the file name is not clickable. */
+.file-card-trash .fname {
+    cursor: default;
+}
+@media (min-width: 681px) {
+    .fc-meta {
+        gap: 6px 12px;
+    }
+    .fc-preview {
+        width: 100%;
+        align-self: stretch;
+    }
+    /* Labelled buttons: each its own box. */
+    .fc-actions .btn-icon {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        font-size: 0.8rem;
+        transition: background var(--t);
+    }
+    .fc-actions .btn-icon:hover {
+        background: var(--bg2);
+        border-color: var(--accent);
+    }
+    .fc-actions .btn-icon-danger:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+}
+/* The dashboard's flash (fc-highlight: a file or folder found by search
+   or opened from the log, the drop zone after a folder is opened from
+   search): an outline pulse; the card's accent edge is in base.css. The
+   class is removed on animationend. */
+.fc-highlight {
+    animation: fc-outline-flash 2.5s ease;
+}
+@keyframes fc-outline-flash {
+    0%,
+    100% {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+    }
+
+    30%,
+    70% {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+}
+
+/* ── Shares view ── */
+.shr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.shr-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    overflow: hidden;
+}
+.shr-card-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+.shr-card-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.shr-card-name-link {
+    cursor: pointer;
+}
+.shr-card-name-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.shr-meta {
+    font-size: 0.78rem;
+    color: var(--text2);
+    margin-top: 4px;
+}
+/* Compact stats line in share cards. */
+.shr-stats {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 5px;
+    opacity: 0.85;
+}
+.shr-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.shr-card-actions-fallback {
+    justify-content: flex-end;
+    padding: 4px 0;
+}
+/* Links about to expire, above the list (renderShareList()). Doubled
+   class: it is a .shr-card too, and its column and left edge must win. */
+.shr-card.shr-expiring {
+    flex-direction: column;
+    gap: 4px;
+    border-left: 3px solid var(--warning);
+}
+.shr-expiring-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+.shr-expiring-item {
+    text-align: left;
+}
+.shr-expiry-soon {
+    color: var(--warning);
+}
+.shr-list-toggle {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin-bottom: 10px;
+}
+/* The files view's sort bar gets its gap from .file-list; the shares list
+   has none, so the bar carries it: the same 8px. */
+#shr-sort-bar {
+    margin-bottom: 8px;
+}
+
+/* ── Colour legends (activity log, settings) ── */
+/* A colour key in a legend: the dot stands for a card accent. */
+.legend-dot {
+    display: inline-block;
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    background: currentColor;
+    vertical-align: 0;
+}
+.legend-owner {
+    color: var(--mark-owner);
+}
+.legend-visitor {
+    color: var(--accent);
+}
+.legend-gated {
+    color: var(--mark-gated);
+}
+
+/* ── Activity ── */
+/* The box of a row in the sessions list (.activity-item,
+   renderSessionsInto() in dashboard.js) and of one occurrence in the
+   activity log (.activity-item-card, renderActivityItem()). */
+.activity-item,
+.activity-item-card {
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: default;
+    margin: 5px 0;
+}
+/* Sessions list rows wrap: event or label on a full line, then ip/meta
+   and time (pushed right). */
+.activity-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 4px 10px;
+}
+.activity-item:hover {
+    background: var(--bg3);
+}
+/* Sizing for every field span: in a sessions row, in a log card's body
+   or in its head row. */
+.activity-item > span,
+.activity-item-card > span,
+.activity-item-head > span {
+    font-size: 0.78rem;
+    min-width: 0;
+}
+/* A log occurrence is not flex: each field is its own row; only the
+   first line, in .activity-item-head, pairs with the time. */
+.activity-item-card > span {
+    display: block;
+    margin-top: 4px;
+}
+/* Head row: first line + timestamp (pushed right by margin-left:auto). */
+.activity-item-head {
+    display: flex;
+    flex-wrap: wrap;
+    /* flex-start, not baseline: a title wrapped onto two lines would drag
+       the timestamp down with its baseline. */
+    align-items: flex-start;
+    column-gap: 10px;
+}
+/* Whatever kind of line ends up beside the time, it is the item's title:
+   primary colour there, secondary for every line below. */
+.activity-item-head > span:first-child {
+    flex: 1 1 auto;
+    color: var(--text);
+}
+/* One line only: flex-wrap assigns lines by natural width before
+   flex-shrink runs, so a long name would push the timestamp down. */
+.home-activity-card .activity-item-head {
+    flex-wrap: nowrap;
+}
+/* One card per event type: title, optional total, list of occurrences. */
+.activity-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 10px 0;
+}
+/* Tighter on home, where the card shares its panel with two others. */
+.home-activity-card {
+    padding: 10px 12px;
+    margin: 6px 0;
+    /* Smaller than on the full page: home is for a glance. */
+    font-size: 0.92em;
+}
+.home-activity-card:first-child {
+    margin-top: 0;
+}
+/* Home only: ellipsis for a very long name (the shared renderer does
+   not truncate). Scoped to .activity-item-target: ellipsis on mixed
+   markup does not truncate reliably. */
+.home-activity-card .activity-item-head > .activity-item-target:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.activity-card-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    margin-bottom: 8px;
+}
+.activity-card-title {
+    font-weight: 600;
+}
+/* Vertical stack of item sub-cards. */
+.activity-item-card:first-child {
+    margin-top: 0;
+}
+.activity-item-card:last-child {
+    margin-bottom: 0;
+}
+/* "Show N more": collapsed by default, like .about-credits but plain. */
+.activity-more summary {
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 0.82rem;
+    margin-top: 4px;
+}
+.activity-more[open] summary {
+    margin-bottom: 4px;
+}
+/* The accent marks the card, not each item. Dashboard-side events
+   (anything but share.*): happened through your authenticated session. */
+.activity-dashboard-side {
+    border-left: 3px solid var(--mark-owner);
+}
+/* Visitor-side share events (no session, no IP stored, see
+   VISITOR_EVENTS in helpers.php) get the complementary blue. */
+.activity-visitor-side {
+    border-left: 3px solid var(--accent);
+}
+/* Two legend lines, one per colour: no gap between them, so they read
+   as one hint. */
+.activity-legend + .activity-legend {
+    margin-top: 0;
+}
+.activity-event,
+.activity-item-event {
+    overflow-wrap: anywhere;
+}
+.activity-event {
+    flex: 1 1 100%;
+}
+/* Target name and id, one line; the Request:/Referral: line alike. */
+.activity-item-target,
+.activity-item-failure-context {
+    color: var(--text2);
+    overflow-wrap: anywhere;
+}
+/* Lines that open with a badge: .activity-count's margin-left spaces
+   it from a preceding name, so drop it when nothing precedes it. */
+.activity-item-target > .activity-count:first-child {
+    margin-left: 0;
+}
+/* Revoke button in a session row: own line, full width (tap target). */
+.activity-item > .btn {
+    flex: 1 1 100%;
+    margin-top: 2px;
+}
+/* Inline beside the address in an activity row; block in the sessions list. */
+.activity-item-meta .activity-client {
+    display: inline;
+    flex: none;
+    margin-top: 0;
+}
+/* Two contexts: a direct flex child of an activity row (100% basis),
+   and nested in .activity-event in the sessions list (display:block).
+   Each declaration is inert in the other. */
+.activity-client {
+    display: block;
+    flex: 1 1 100%;
+    font-size: 0.7rem;
+    color: var(--text2);
+    margin-top: 2px;
+}
+/* In an IP address's slot: reads as deliberately anonymous, not missing. */
+.activity-visitor {
+    font-style: italic;
+    opacity: 0.75;
+}
+.activity-meta,
+.activity-item-meta {
+    color: var(--text2);
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+.activity-meta {
+    flex: 1 1 auto;
+}
+/* Flex properties apply: this always sits in .activity-item-head (flex),
+   and .activity-time is flex directly in the sessions list. */
+.activity-time,
+.activity-item-time {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: var(--text2);
+    white-space: nowrap;
+    text-align: right;
+}
+.activity-reason-alert {
+    color: var(--warning);
+}
+/* In the activity log, "Link 12" jumps to the link's card and a name to
+   the object it names (activityTargetLine()). */
+.activity-link,
+.activity-target-link {
+    font: inherit;
+    text-align: inherit;
+}
+/* Small inline chip in the activity log: the id/type badge, the
+   opening/download ordinal, a referrer or requested URL. */
+.activity-count {
+    font-size: 0.82em;
+    padding: 0.05em 0.4em;
+    margin-left: 0.35em;
+    border-radius: 4px;
+    background: var(--bg3);
+    color: var(--text2);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Settings ── */
+.settings-grid {
+    /* Two fixed columns (.settings-col, see dashboard.php): each card keeps
+       its own height and its side, whatever expands above it. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+}
+.settings-col {
+    /* Grid items default to min-width: auto, which lets a long unbroken
+       value (a path in the requirements card) widen the column. */
+    min-width: 0;
+}
+@media (max-width: 680px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+        /* The columns stack: the last card of the left one keeps its
+           margin-bottom, so no extra gap. */
+        gap: 0;
+    }
+}
+.settings-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    /* Vertical spacing between stacked cards. */
+    margin-bottom: 14px;
+    /* A card scrolled to (e.g. from the requirements banner) stops below
+       the sticky header. */
+    scroll-margin-top: calc(var(--header-h) + 14px);
+}
+.settings-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+/* Elevation-gated cards: a left-edge accent (.legend-gated in the legend),
+   the same silver as the owner-side log cards. */
+.settings-card.gated {
+    border-left: 3px solid var(--mark-gated);
+}
+.settings-details {
+    cursor: default;
+    list-style: none;
+}
+.settings-details[open] {
+    padding-bottom: 22px;
+}
+.settings-details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: -20px -22px;
+    padding: 20px 22px;
+    border-radius: var(--radius);
+    user-select: none;
+    list-style: none;
+}
+.settings-details-summary::-webkit-details-marker {
+    display: none;
+}
+.settings-details-summary::after {
+    content: "›";
+    font-size: 1.1rem;
+    opacity: 0.5;
+    transition: transform var(--t);
+}
+.settings-details[open] .settings-details-summary {
+    margin-bottom: 16px;
+}
+.settings-details[open] .settings-details-summary::after {
+    transform: rotate(90deg);
+}
+.settings-details-summary:hover {
+    background: var(--bg3);
+}
+/* Settings section */
+.settings-hint {
+    margin-bottom: 12px;
+}
+.settings-hint-warn {
+    color: var(--warning);
+}
+.settings-block {
+    margin-top: 14px;
+}
+.settings-save-wrap {
+    margin-top: 12px;
+}
+.settings-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.settings-msg-wrap {
+    margin-top: 8px;
+}
+.settings-sub {
+    margin-top: 6px;
+}
+.settings-sub-warn {
+    color: var(--warning);
+}
+.settings-flex-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.settings-flex-col {
+    flex: 1;
+    min-width: 140px;
+}
+.settings-save-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.settings-save-row .settings-save-btn {
+    margin-top: 0;
+}
+.settings-hint-block,
+.settings-block-label {
+    margin-top: 4px;
+}
+/* The ALTCHA benchmark button, under the hint for the selected level: room
+   above it, or it sits against the last line of that text. */
+#btn-captcha-test {
+    margin-top: 12px;
+}
+.elevate-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.elevate-legend .btn {
+    margin-left: auto;
+}
+/* After .settings-block, whose top margin it replaces on the hint that
+   carries both. */
+/* Hint inline after the label */
+.settings-inline-hint {
+    font-weight: 400;
+    margin-top: 2px;
+}
+/* Save button spacing */
+.settings-save-btn {
+    margin-top: 16px;
+}
+/* "What this resets to": same row and look, right above Save. */
+.settings-default-row {
+    /* A paragraph, so a line of its own (Save wraps below); only as wide
+       as its text. */
+    width: fit-content;
+    margin-top: 12px;
+    padding: 5px 10px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    font-size: 0.8rem;
+}
+/* Action buttons at the bottom of a settings card (passkeys, update and
+   integrity checks, About). */
+.card-actions-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+/* A note under the buttons (the passkey providers): the same gap the other
+   cards leave between a control and the hint that follows it. */
+.card-actions-row + .hint-sm {
+    margin-top: 10px;
+}
+/* Storage usage bar (settings) */
+.usage-trk {
+    height: 8px;
+    background: var(--bg3);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.usage-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0;
+    transition: width 0.3s ease;
+}
+/* Server requirements card (shared rules in base.css) */
+.reqs-list {
+    list-style: none;
+}
+.reqs-list li {
+    padding: 3px 0;
+    font-size: 0.88rem;
+    word-break: break-word;
+}
+.reqs-ok {
+    color: var(--success);
+}
+.reqs-warn {
+    color: var(--warning);
+    /* The requirements banner scrolls to the first of these; as for
+       .settings-card, it stops below the sticky header. */
+    scroll-margin-top: calc(var(--header-h) + 14px);
+}
+/* An optional feature that is off on this server: nothing to fix. */
+.reqs-off {
+    color: var(--text3);
+}
+/* Tap-to-copy here (dashboard.js); the line itself is in base.css. */
+.reqs-detail {
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+/* Added by dashboard.js where the clipboard API exists: a tap copies,
+   and without the selection no system copy bar covers the confirmation.
+   A long press still selects. */
+.reqs-detail.is-copyable {
+    user-select: text;
+}
+.reqs-fix {
+    margin: 6px 0 0 1.6em;
+}
+.passkey-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+}
+.passkey-item-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* ── About card ── */
+/* Under a row of buttons (GitHub, donate): a rule, so the folded list does
+   not read as one more of them. */
+.about-credits {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+.about-credits-list {
+    margin: 10px 0 0;
+    padding-left: 13px;
+}
+/* About → Credits (app/includes/Vendor.php): name and version, then
+   purpose and licence. */
+.vendor-head {
+    display: block;
+}
+.about-credits-list li + li {
+    margin-top: 0.5em;
+}
+.vendor-version {
+    font-size: 0.82rem;
+    color: var(--text3);
+    font-family: var(--font-mono);
+}
+.vendor-desc {
+    display: block;
+    font-size: 0.88rem;
+    color: var(--text2);
+}
+/* Qualified with .btn-ghost so the colours win over it without !important. */
+.btn-ghost.about-donate-btn {
+    border-color: var(--warning);
+}
+.btn-ghost.about-donate-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+/* ── Banners: update and integrity ── */
+/* Above the views: a new release (update-bar) or modified files
+   (integrity-bar), same box in their own colour. */
+.update-bar,
+.integrity-bar {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    flex-shrink: 0;
+}
+.update-bar {
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg2));
+    border: 1px solid var(--accent);
+}
+.integrity-bar {
+    background: color-mix(in srgb, var(--warning) 14%, var(--bg2));
+    border: 1px solid var(--warning);
+}
+#update-check-result .update-bar-actions {
+    margin-top: 10px;
+}
+.update-bar-actions,
+.integrity-bar-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-basis: 100%;
+}
+/* Release notes teaser. pre-wrap: release bodies are Markdown, not
+   rendered, but their line breaks matter. max-height caps a long one. */
+.update-notes {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--border);
+    background: var(--bg2);
+    border-radius: var(--radius);
+    color: var(--text2);
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.update-notes-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text2);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+/* Integrity check modal. */
+.integrity-section + .integrity-section {
+    margin-top: 16px;
+}
+.integrity-section-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+.label-optional,
+.count-badge {
+    color: var(--text2);
+    font-weight: 400;
+}
+.integrity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.integrity-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--radius);
+    font-size: 0.83rem;
+}
+.integrity-item-name {
+    font-weight: 500;
+    word-break: break-all;
+}
+.integrity-item-meta,
+.passkey-item-date {
+    color: var(--text2);
+    font-size: 0.78rem;
+}
+.integrity-item-action {
+    align-self: flex-end;
+    margin-top: 6px;
+}
+.integrity-empty {
+    color: var(--text2);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* ── Idle warning bar ── */
+.idle-warn-bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #2d1f06, #1a1200);
+    border-bottom: 1px solid var(--warning);
+    font-size: 0.88rem;
+    animation: warn-slide-in 0.25s ease;
+}
+@keyframes warn-slide-in {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.idle-warn-text {
+    color: var(--warning);
+}
+.idle-warn-text strong {
+    font-size: 1rem;
+}
+/* Qualified with .btn-ghost, as .about-donate-btn. */
+.btn-ghost.idle-warn-btn {
+    flex-shrink: 0;
+    border-color: var(--warning);
+    color: var(--warning);
+}
+.btn-ghost.idle-warn-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--warning) 15%, transparent);
+}
+
+/* ── Session lock overlay ── */
+.session-lock {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: lock-in 0.25s ease;
+}
+@keyframes lock-in {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0);
+    }
+
+    to {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+    }
+}
+.session-lock-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    animation: lock-card-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lock-card-in {
+    from {
+        transform: scale(0.9) translateY(12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+.session-lock-icon {
+    font-size: 2.8rem;
+    margin-bottom: 12px;
+}
+.session-lock-title {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+}
+.session-lock-msg {
+    font-size: 0.88rem;
+    color: var(--text2);
+    margin-bottom: 24px;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+.session-lock-btn {
+    display: block;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.session-lock-help {
+    font-size: 0.78rem;
+    color: var(--text2);
+    margin-top: 14px;
+}

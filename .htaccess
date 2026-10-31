@@ -1,0 +1,32 @@
+# AESBin — for a host whose web root cannot be changed (e.g. Altervista): the
+# whole project uploaded as it is, this file maps every request into public/.
+# With public/ as the document root (the better choice where the panel
+# allows it) this file is never read.
+#
+# URLs stay /, /login, /assets/…: public/ is not part of them. Everything
+# outside public/ (app/includes/, config.php, the storage directory…) can no
+# longer be reached, even by a URL that names it, because every URL lands in
+# public/ first. The rules for public/ itself are in public/.htaccess.
+
+Options -Indexes -MultiViews
+DirectoryIndex disabled
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Force HTTPS, as public/.htaccess does, before the request is mapped.
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Already mapped (this is the second pass): leave it to public/.htaccess.
+    RewriteRule ^public/ - [L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Without mod_rewrite nothing can be mapped, and serving this directory as it
+# is would expose the application: nothing is served instead.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>

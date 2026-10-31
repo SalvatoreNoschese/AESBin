@@ -1,0 +1,222 @@
+# AESBin — Apache configuration for public/, the web root
+# Works in webroot (/) and in a subdirectory (/aesbin/, …), with public/ as
+# the document root or with the root .htaccess mapping requests into it.
+#
+# Only what the browser needs is in here, and index.php is the only PHP code
+# (each folder's own index.php is a one-line stub that stops a listing where
+# -Indexes is overridden, and shows an empty page): the application, the
+# installer, config.php and, by default, the storage directory sit one level
+# up, out of reach whatever these rules say. The
+# rules below are for what could still end up in here by mistake: a stray
+# file, a backup, a storage directory typed inside public/ (bootstrap.php
+# writes a .htaccess into whatever directory storage_path resolves to).
+
+Options -Indexes -MultiViews
+
+# No "Apache/2.4.x (OS) Server at …" line under the error pages Apache still
+# writes itself (500, 413…): nothing to tell a scanner which version runs.
+ServerSignature Off
+
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+# By filename at any depth, so it works without mod_rewrite: every .php but
+# index.php, dotfiles, the PHP error logs shared hosts write into the site
+# folder (error_log, php_errorlog: no extension, so the allow-list below never
+# sees them), and editor leftovers and backups (index.php.bak, config.php~
+# would otherwise be served as plain text). Files inside a dotted directory
+# (.ssh/id_rsa) are left to the hidden-path rule below.
+<FilesMatch "^(?!index\.php$).*\.php$|^\.(?!well-known)|^(error_log|php_errorlog)$|\.(log|bak|old|orig|save|swp|swo|swn|kate-swp|tmp|rej|sql)$|~$|^#.*#$">
+    Require all denied
+</FilesMatch>
+
+# URL rewriting
+RewriteEngine On
+
+# Force HTTPS. Only a redirect: enforcement is in bootstrap.php, which trusts
+# X-Forwarded-Proto only from a declared proxy (.htaccess can't check that).
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Anything hidden, at any depth: .env, .git/, .ssh/id_rsa. FilesMatch cannot
+# see a dotted directory. .well-known stays reachable for ACME renewal and
+# security.txt.
+RewriteRule (^|/)\.(?!well-known(?:/|$))  - [F,L]
+
+# security.txt has one address, the RFC 9116 one: the legacy /security.txt is
+# a permanent redirect to it, whatever file exists. /.well-known/security.txt
+# is the admin's file when public/.well-known/security.txt exists, else the
+# one AESBin generates (router.php). At the domain root only: in a
+# subdirectory AESBin publishes none (security_txt_served() in helpers.php).
+RewriteCond %{REQUEST_URI} ^/security\.txt$ [NC]
+RewriteRule ^ /.well-known/security.txt [R=301,L]
+
+# Any extension not on this allow-list is denied. %{REQUEST_URI} is
+# root-absolute, so the exemptions use (^|/) to also work in a subdirectory.
+# index.php is also the 403 page (the ErrorDocument below), fetched by an
+# internal request that would otherwise deny itself.
+#
+# .txt and .md are allowed only by filename (vendored licence/readme files,
+# robots.txt, llms.txt), so a stray docs/ folder or note is denied.
+RewriteCond %{REQUEST_URI} \.[^/]+$
+RewriteCond %{REQUEST_URI} !(^|/)(?:index\.php|help\.html|robots\.txt|llms\.txt)$
+RewriteCond %{REQUEST_URI} !(^|/)(?:license|licence|readme|notice|security|changelog)\.(?:txt|md)$ [NC]
+RewriteCond %{REQUEST_URI} !\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest)$ [NC]
+RewriteRule ^ - [F,L]
+
+# Bot/scanner probes for paths AESBin never has, so router.php's
+# route.not_found log stays useful instead of buried in known noise.
+# Extension-based probes are already covered by the whitelist above.
+# Before adding an entry, check it against /api/, /login, /privacy,
+# /recovery, /s/, /assets/ and /vendor/.
+
+# WordPress, by far the loudest family
+RewriteRule ^(?:wp-|wordpress(?:/|$)) - [F,L,NC]
+
+# No leading dot, so the hidden-path rule above misses these.
+RewriteRule ^(?:env(?:/|$)|ip(?:/|$)) - [F,L,NC]
+
+# Symfony debug dump and phpinfo() probes. Matched in any segment, not
+# anchored to ^: they arrive after index.php as PATH_INFO or behind junk
+# prefixes. No AESBin route uses these names.
+RewriteRule (^|/)(?:_environment|info|phpinfo)(?:/|$) - [F,L,NC]
+
+# Database and generic admin panels
+RewriteRule ^(?:phpmyadmin|pma(?:/|$)|myadmin(?:/|$)|adminer(?:/|$)|administrator(?:/|$)|admin(?:/|$)) - [F,L,NC]
+
+# Framework debug endpoints: Laravel, Symfony, Spring Boot
+RewriteRule ^(?:_ignition|_profiler(?:/|$)|telescope(?:/|$)|actuator(?:/|$)|storage/logs/) - [F,L,NC]
+
+# Known-vulnerable vendored tooling this project does not ship
+RewriteRule ^(?:vendor/phpunit/|cgi-bin/) - [F,L,NC]
+
+# Server introspection and mail autodiscovery
+RewriteRule ^(?:server-status|server-info|autodiscover/|owa(?:/|$)) - [F,L,NC]
+
+# Next.js build assets, and an API root asked for bare. Only /api itself:
+# every AESBin endpoint is below /api/, which stays untouched.
+RewriteRule ^(?:_next(?:/|$)|api/?$|auth/?$) - [F,L,NC]
+
+# Front controller. Must stay the last rewrite rule. Real files and
+# directories pass through.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# --- Custom 403 page --- #
+
+# The page shown for whatever the rules above refuse. index.php here is not
+# the entry point letting a refused request in: the server has already denied
+# it, and runs index.php only to draw the 403 page. The refused file is never
+# executed; REDIRECT_STATUS (403, set by the server, not by the client) tells
+# index.php to show the page and stop, before the database and the routes
+# (AESBIN_REFUSED in app/includes/bootstrap.php). One script, so the page has
+# the 404's layout, the visitor's language and the footer, with no second PHP
+# file open to the web.
+#
+# Resolved from the document root; a subdirectory install needs the prefix
+# (/aesbin/index.php). The installer sets it and the dashboard reports a wrong
+# one. Comment out to keep the server's own page.
+
+ErrorDocument 403 /index.php
+
+# --- end Custom 403 page --- #
+
+# Response headers: security first, then cache. One block, since both need
+# mod_headers and nothing else; each part says what it is for.
+<IfModule mod_headers.c>
+    # ── Security ─────────────────────────────────────────────────────────────
+    # For static files only, except the first two groups below (X-Frame-Options,
+    # Server and X-Powered-By), which apply to every response.
+    # csp_header() sends the same set for everything that reaches PHP;
+    # FilesMatch tests the file finally served, so requests rewritten to
+    # index.php are excluded and headers are not sent twice under mod_php.
+    #
+    # X-Frame-Options on every response, PHP ones included, not only static
+    # files: some hosts add their own value (SAMEORIGIN) at server level, and
+    # it replaces the DENY csp_header() sends, while a rule here is applied
+    # after it. Same value as csp_header(), so nothing changes where no host
+    # interferes. The unset clears PHP's copy first: "always" writes to a
+    # separate header table, and a backend's header (PHP-FPM) would otherwise
+    # be sent next to it, twice. frame-ancestors 'none' in the CSP already
+    # forbids framing in current browsers; this keeps older ones in line.
+    Header unset X-Frame-Options
+    Header always set X-Frame-Options "DENY"
+
+    # What the server runs is nobody else's business. bootstrap.php already
+    # drops PHP's X-Powered-By; this also covers a response sent before it
+    # (a parse error) and one a hosting panel adds itself ("PleskLin").
+    # Server goes on LiteSpeed and wherever a backend sets it; Apache adds its
+    # own after mod_headers, and only ServerTokens (server configuration, not
+    # .htaccess) trims that one. Both tables, as for X-Frame-Options above.
+    Header unset Server
+    Header unset X-Powered-By
+    Header always unset Server
+    Header always unset X-Powered-By
+
+    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest|txt|md|html)$">
+        Header always set X-Content-Type-Options     "nosniff"
+        Header always set Referrer-Policy            "strict-origin-when-cross-origin"
+        Header always set Permissions-Policy         "camera=(), microphone=(), geolocation=(), payment=()"
+        Header always set Cross-Origin-Opener-Policy "same-origin"
+        Header always set Cross-Origin-Resource-Policy "same-origin"
+        # Not indexed either (see csp_header() and robots.txt).
+        Header always set X-Robots-Tag               "noindex, nofollow"
+        # No Strict-Transport-Security here or in PHP: it covers the whole
+        # host, so it is the server's to set (docs/security-model.md § Design notes).
+    </FilesMatch>
+
+    # For help.html, the only HTML served without PHP. Scoped because this
+    # policy differs from csp_header()'s and would break application pages
+    # (nonces, ALTCHA worker).
+    #
+    # Its <style> block is allowed by its SHA-256 hash only, no
+    # 'unsafe-inline': bin/lint.sh checks the hash and prints a new one.
+    # form-action, frame-ancestors and base-uri do not inherit default-src, so
+    # they are spelled out; img-src 'self' is for the favicon.
+    <Files "help.html">
+        Header always set Content-Security-Policy "default-src 'none'; style-src 'sha256-7iOydNhsi0oAArUR6DBYnMFJeyoIlkVHhl60mUp5J00='; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+    </Files>
+
+    # ── Cache for static files ───────────────────────────────────────────────
+    # Every URL the application prints for one carries ?v=<modification time>
+    # (asset() and asset_version() in helpers.php): a changed file gets a new
+    # URL, so a year with "immutable" is safe and a repeat visit fetches
+    # nothing. Chosen by file name, not by the query string: the exceptions
+    # are the files that are requested WITHOUT ?v=, listed below. A new file
+    # fetched by a URL the application does not print (a manifest icon, a
+    # library's own relative request) belongs in that list; bin/lint.sh
+    # (check 3m) catches a hand-built one. docs/maintaining.md § Stylesheets.
+    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # Requested by the browser itself at a fixed URL: /favicon.ico,
+    # /apple-touch-icon.png and the icons named in site.webmanifest. A week,
+    # then revalidated (ETag/Last-Modified).
+    <FilesMatch "^(?:favicon\.ico|apple-touch-icon\.png|web-app-manifest-[a-z0-9-]+\.png)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    # pdf.js's pure-JS decoders (vendor/pdfjs/nowasm/), fetched by pdf.js
+    # with the name appended to a folder URL, so no ?v= is possible. Kept,
+    # but revalidated on every use (a 304 of a few bytes): after a pdf.js
+    # update they must never be served stale next to the new worker.
+    <FilesMatch "_nowasm_fallback\.js$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
+
+# Explicit MIME types
+<IfModule mod_mime.c>
+    AddType text/javascript           .js .mjs .cjs
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
+# Covers errors before bootstrap.php's ini_set() runs, such as a parse error
+# printed into the page. mod_php only; resource limits are in installation.md.
+<IfModule mod_php.c>
+    php_flag log_errors     On
+    php_flag display_errors Off
+</IfModule>

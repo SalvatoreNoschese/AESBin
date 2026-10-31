@@ -1,0 +1,68 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AESBin — .gitignore
+#
+# The first two entries are the important ones. config.php holds the database
+# password and the ALTCHA HMAC secret in plaintext, and the storage directory
+# (_storage-xxxx/ by default) holds every encrypted blob. Committing either —
+# which is easy to do by accident when you fork the repo and run your instance
+# out of the same working copy — publishes them. Everything below that is
+# ordinary noise.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Instance configuration — CONTAINS SECRETS, never commit
+/config.php
+/.config.php.*.tmp
+# staging_path() copies of public/.htaccess (the 403 fix): a leading dot
+# before the file's own, hence the two.
+/public/..htaccess.*.tmp
+
+# Encrypted blobs, trash, runtime cache, and the .htaccess written at first boot
+/_storage*/
+
+# If storage_path was pointed elsewhere, add that directory here too.
+
+# Pre-install guard file and its attempt counter (see app/setup/index.php,
+# setup_guard_dir()). Created by the installer, deleted the moment config.php
+# is written — neither should ever reach a commit, and the code is not meant
+# to leave the server it was generated on.
+/app/setup/_viewme/
+
+# Logs
+*.log
+error_log
+php_errorlog
+/php_errors.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Local tooling that must not ship in a release.
+# NOT /app/vendor/ or /public/vendor/ — this project has no Composer, and they are
+# our own vendored copies of the libraries the app runs on, one folder per
+# library (PHP in app/vendor/, what the browser loads in public/vendor/).
+# A line ignoring it would silently drop every one of them from any commit:
+# a clean git clone would ship without ALTCHA, passkeys-php, pdf.js, Prism,
+# or kjua, and nothing would say why until someone opened the login page and
+# the captcha never loaded.
+/.ddev/
+/node_modules/
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+# Fetched on demand by bin/lint.sh; .part is an interrupted download.
+/bin/tools/phpstan.phar
+/bin/tools/phpstan.phar.part
+/bin/tools/.latest-versions
+# Installed on demand by bin/lint.sh (npm, into this folder).
+/bin/tools/stylelint/
+
+# Build artefacts: fetch-vendor.sh and make-release.sh put their archives in bin/dist/.
+/bin/dist/
+/*.zip
+/*.tar.gz

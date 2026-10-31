@@ -1,0 +1,32 @@
+# AESBin
+
+> Self-hosted, single-user file manager for ordinary PHP hosting. Files, filenames, MIME types and descriptions are stored as AES-256-GCM ciphertext; public share links are read-only and carry their key in the URL fragment.
+
+Encryption is server-side, in PHP, not client-side. While the user is logged in, the PHP session holds the master key wrapped with a per-tab key, and the server unwraps it in memory for each request. What this defeats is theft of the database, the stored files or the whole disk; it is not a zero-knowledge design. The threat model states the limits in full.
+
+Key facts:
+
+- AES-256-GCM with per-file keys wrapped by a single master key
+- Argon2id (64 MiB, 3 iterations) for the master password and the 10-word recovery phrase
+- Mandatory TOTP; optional passkey login via WebAuthn with the PRF extension
+- Account recovery is off by default and is opened by editing `config.php` on the server
+- No Composer, no npm, no build step, no CDN; PHP 8.3+ and MySQL/MariaDB
+- Licensed under the AGPL-3.0; maintained by Salvatore Noschese
+
+## Docs
+
+- [README](https://github.com/SalvatoreNoschese/AESBin/blob/main/README.md): Overview, comparison with similar tools, quick install
+- [Installation](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/installation.md): Requirements, setup wizard, nginx/Caddy rules, main `config.php` options
+- [Updating](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/updating.md): Installing a new release while keeping `config.php` and the storage folder
+- [Security model](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/security-model.md): Key hierarchy, threat model, elevation, stated limitations
+- [Features](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/features.md): Full feature list, with the reasoning behind non-obvious behaviour
+- [Architecture](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/architecture.md): Directory layout, request flow, storage and configuration
+- [SECURITY.md](https://github.com/SalvatoreNoschese/AESBin/blob/main/SECURITY.md): Vulnerability reporting, scope, accepted risks
+
+## Optional
+
+- [Vendored libraries](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/vendored-libraries.md): Bundled dependencies, versions, licences, update procedure
+- [Maintaining](https://github.com/SalvatoreNoschese/AESBin/blob/main/docs/maintaining.md): Notes for anyone changing the code
+- [CHANGELOG](https://github.com/SalvatoreNoschese/AESBin/blob/main/CHANGELOG.md): Release history
+- [Releases](https://github.com/SalvatoreNoschese/AESBin/releases): Tagged versions (download the *Source code* zip)
+- [LICENSE](https://github.com/SalvatoreNoschese/AESBin/blob/main/LICENSE): GNU Affero General Public License v3.0

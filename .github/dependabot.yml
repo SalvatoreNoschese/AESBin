@@ -1,0 +1,15 @@
+# Keeps the GitHub Actions in .github/workflows/ up to date. Once a week
+# Dependabot looks for new releases of the actions used there and, when
+# there are some, opens one pull request that moves each pin to the new
+# commit and updates the "# version" comment next to it. Merge it once CI
+# is green. It does not touch PHPStan or Stylelint: bin/lint.sh offers those.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # All the actions in one pull request, not one each.
+    groups:
+      actions:
+        patterns: ["*"]

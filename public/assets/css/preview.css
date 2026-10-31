@@ -1,0 +1,244 @@
+/* preview.css — inline file preview (images, audio, video, PDF, text),
+   markup built by preview.js. Dashboard and share page, after base.css. */
+
+.preview-wrap > * {
+    width: 100%;
+}
+/* Space between .fc-preview's top border and whatever opens the preview.
+   Only the first child: below the metadata panel its own margin is the gap.
+   Text previews are left out: their toolbar row is padded already. */
+.preview-wrap > :first-child:is(.meta-panel, .pdf-preview-container,
+        .preview-media, .preview-media-guard, .preview-video, .preview-audio) {
+    margin-top: 10px;
+}
+.preview-media {
+    max-width: 100%;
+    /* Lower than share.css's 70vh: the dashboard has a fixed header. */
+    max-height: 60vh;
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+.preview-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 8px 0;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    list-style: none;
+}
+.preview-toolbar > button {
+    font-size: 0.78rem;
+}
+/* Encoding and line endings of a text preview, flush with the card's left
+   edge as the Copy button is with its right one, in the type of the size,
+   type and date line above: a fact about the file, not part of it.
+   Too narrow for both, the line endings go under the encoding, each whole.
+   The "·" between them sits in the gap, left of the second part: when that
+   part wraps, the dot falls outside the box and overflow clips it, so no
+   line starts with one. */
+.preview-format {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 16px;
+    overflow: hidden;
+    margin-right: auto;
+    align-self: center;
+    font-size: 0.8rem;
+    color: var(--text2);
+}
+.preview-format > span {
+    position: relative;
+    white-space: nowrap;
+}
+.preview-format > span + span::before {
+    content: '·';
+    position: absolute;
+    right: calc(100% + 6px);
+}
+/* SVG preview: divider between the source above and the image below. */
+.svg-image-display {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+/* ── Media elements ── */
+.preview-video {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+.preview-audio {
+    width: 100%;
+    margin: 8px 0;
+    display: block;
+}
+.preview-msg {
+    font-size: 0.84rem;
+    color: var(--text2);
+    text-align: center;
+    padding: 10px;
+}
+.preview-link {
+    color: var(--accent);
+    font-weight: bold;
+    text-decoration: underline;
+}
+.pdf-preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.pdf-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+.pdf-nav-btn {
+    padding: 2px 8px;
+    /* One arrow per button: a touch target that does not depend on it. */
+    min-width: 40px;
+}
+.pdf-page-info {
+    font-size: 0.84rem;
+    font-family: var(--font-mono);
+}
+.pdf-scroll-wrap {
+    width: 100%;
+    max-height: 60vh;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+}
+.pdf-canvas {
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Markdown help. The summary is the toolbar row (arrow and label left,
+   copy button right) and carries the background and separator that
+   .preview-toolbar draws for other previews. */
+.md-help {
+    font-size: 0.87rem;
+}
+.md-help > summary {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+}
+/* Native marker off in both dialects. No flex gap, so the arrow stays
+   next to its label. */
+.md-help > summary::-webkit-details-marker {
+    display: none;
+}
+/* Drawn, so it is the same in every browser and can rotate. Flush with the
+   card's edge, like the Checksum arrow above. */
+.md-help > summary::before {
+    content: '';
+    flex: none;
+    margin: 0 6px 0 0;
+    border: 0.3em solid transparent;
+    border-left-color: currentColor;
+    transition: transform var(--t);
+}
+.md-help[open] > summary::before {
+    transform: rotate(90deg);
+}
+/* Inside the summary the toolbar fills the leftover width; the row
+   carries the background and border. */
+.md-help > summary > .preview-toolbar {
+    flex: 1;
+    background: none;
+    border-bottom: 0;
+}
+.md-help-label {
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* In the Markdown row the left edge is the help label's: next to Copy. */
+.md-help .preview-format {
+    margin-right: 0;
+}
+/* On a phone the three do not fit one row and the help label was cut
+   short: the toolbar takes a row of its own under the label, laid out
+   like every other text preview (format left, Copy right). Kept after
+   the rules above: same specificity, so the later one wins. */
+@media (max-width: 680px) {
+    .md-help > summary {
+        flex-wrap: wrap;
+    }
+    .md-help-label {
+        flex: 1;
+        padding: 8px 0;
+    }
+    .md-help > summary > .preview-toolbar {
+        flex: 0 0 100%;
+        border-top: 1px solid var(--border);
+    }
+    .md-help .preview-format {
+        margin-right: auto;
+    }
+}
+.md-help p {
+    margin: 10px 0 0;
+    color: var(--text2);
+}
+.md-help ul {
+    margin: 8px 0 10px;
+    padding-left: 20px;
+}
+.md-help li {
+    margin: 3px 0;
+}
+
+/* ── Metadata panel ──
+   Dashboard only (renderPanel() in strip-meta.js): what a photo or video
+   carries, above its preview. */
+.meta-panel {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg2);
+    font-size: 0.85rem;
+}
+.meta-panel summary {
+    cursor: pointer;
+    color: var(--text2);
+}
+.meta-list {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 4px 14px;
+    margin: 8px 0 2px;
+}
+.meta-list dt {
+    color: var(--text2);
+}
+.meta-list dt.meta-sensitive {
+    color: var(--warning);
+}
+.meta-list dd {
+    overflow-wrap: anywhere;
+}
+/* What the upload does with this format, under the list. */
+.meta-note {
+    margin: 8px 0 2px;
+    color: var(--text3);
+    font-size: 0.8rem;
+}

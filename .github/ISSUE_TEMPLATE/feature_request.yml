@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest something AESBin should do.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the "Things that will be declined" section of
+        [CONTRIBUTING.md](https://github.com/SalvatoreNoschese/AESBin/blob/main/CONTRIBUTING.md) first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that AESBin makes hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

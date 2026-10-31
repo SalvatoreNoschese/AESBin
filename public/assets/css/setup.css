@@ -1,0 +1,468 @@
+/* AESBin — setup.css
+   Installer styles, loaded after base.css, which supplies
+   the tokens and the shared components (buttons, fields, alerts, language
+   menu, no-JS overlay). Only what the installer does differently is here. */
+
+/* Alerts start hidden; setup.js reveals them with .show. Colours come from
+   base.css (.alert-danger, .alert-warning). */
+.alert {
+    display: none;
+}
+.alert.show {
+    display: block;
+}
+
+/* The 403 advisory ends with a directive to copy, so its newlines must
+   survive. Not for other .alert blocks: their indented template markup would
+   render as blank lines. */
+#install-warning {
+    white-space: pre-line;
+}
+
+/* ── Page ── */
+/* height: auto undoes base.css's height: 100%, which would clip the bottom
+   padding of a wizard taller than the window. */
+body {
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
+}
+/* Wider than the app's cards: the wizard carries a step bar and forms. */
+.card {
+    border-radius: 10px;
+    padding: 36px 40px;
+    max-width: 560px;
+}
+h1 {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+.sub {
+    color: var(--text2);
+    font-size: 0.88rem;
+    margin-bottom: 24px;
+}
+
+/* Steps indicator */
+.steps {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+}
+.step {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 0.75rem;
+    color: var(--text2);
+    border-bottom: 2px solid var(--border);
+    position: relative;
+}
+.step.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+}
+.step.done {
+    color: var(--success);
+    border-bottom-color: var(--success);
+}
+
+/* Requirements */
+.reqs {
+    list-style: none;
+    margin-bottom: 16px;
+}
+.reqs li {
+    padding: 3px 0;
+    font-size: 0.88rem;
+}
+.ok {
+    color: var(--success);
+}
+.fail {
+    color: var(--danger);
+}
+.warn {
+    color: var(--warning);
+}
+/* An optional feature that is off on this server: nothing to fix. */
+.off {
+    color: var(--text2);
+}
+/* The database minimum, which cannot be checked before step 1. */
+.reqs-note {
+    color: var(--text2);
+    font-size: 0.88rem;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin: 4px 0 16px;
+}
+.reqs-note.fail {
+    color: var(--danger);
+}
+/* Pre-flight requirements screen */
+#step-check h2 {
+    font-size: 1.05rem;
+}
+#step-check .btn {
+    width: 100%;
+    margin-top: 8px;
+}
+/* .reqs-env, .reqs-group, .reqs-hint and .reqs-detail are shared with the
+   dashboard, in base.css. Here the environment line follows a heading. */
+.reqs-env {
+    margin-top: 10px;
+}
+
+/* Form */
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text2);
+    margin: 14px 0 4px;
+}
+input,
+select {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.15s;
+}
+input:focus,
+select:focus {
+    border-color: var(--accent);
+}
+.hint {
+    font-size: 0.78rem;
+    color: var(--text3);
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+.row {
+    display: grid;
+    grid-template-columns: 1fr 90px;
+    gap: 10px;
+}
+/* TOTP */
+.totp-secret {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    word-break: break-all;
+    text-align: center;
+    color: var(--text2);
+    margin: 10px 0;
+}
+#totp-qr {
+    text-align: center;
+    margin: 16px 0;
+}
+#totp-qr canvas {
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/* Recovery phrase */
+.phrase-box {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    line-height: 1.8;
+    word-spacing: 0.4em;
+    margin: 10px 0;
+    user-select: all;
+}
+.phrase-actions {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
+}
+.phrase-actions .btn-ghost {
+    flex: 1;
+}
+.phrase-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+.phrase-check input {
+    width: auto;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+/* Step panels */
+.step-panel {
+    display: none;
+}
+.step-panel.active {
+    display: block;
+}
+
+/* DB test status */
+.db-status {
+    font-size: 0.82rem;
+    margin-top: 6px;
+    min-height: 18px;
+}
+
+fieldset {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+}
+legend {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text2);
+    padding: 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ── Installations found at step 1, when there are several ─────────── */
+.existing-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+}
+.existing-item input {
+    width: auto;
+    margin-top: 3px;
+}
+.existing-item-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.existing-prefix-name {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text);
+}
+.existing-item-path {
+    font-size: 0.78rem;
+    color: var(--text3);
+    overflow-wrap: anywhere;
+}
+
+/* ── Hint text variants ───────────────────────────────────────────── */
+.hint-muted {
+    color: var(--text3);
+    font-weight: 400;
+}
+
+.hint-dim {
+    opacity: .7;
+}
+
+/* ── TOTP secret code ─────────────────────────────────────────────── */
+.totp-secret code {
+    font-size: 10px;
+}
+
+/* ── Button spacing ─────────────────────────────────────────────── */
+.btn-mt {
+    margin-top: 8px;
+}
+.btn-mt-sm {
+    margin-top: 10px;
+}
+
+/* ── Step 4 intro ─────────────────────────────────────────────────── */
+.setup-step-intro {
+    margin-bottom: 16px;
+    color: var(--text2);
+    font-size: 0.9rem;
+}
+
+/* ── Existing install panel ──────────────────────────────────────── */
+#existing-list {
+    margin-bottom: 16px;
+}
+#existing-selected-prefix {
+    color: var(--accent);
+}
+#existing-err {
+    margin-top: 8px;
+}
+
+.existing-reconnect-fieldset {
+    margin-bottom: 12px;
+}
+
+/* Alert block variant (needed when alert is not inside a flow) */
+.alert-block {
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* ── Language card at top of setup ─── */
+.setup-lang-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+.setup-lang-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.no-js .card {
+    display: none !important;
+}
+/* ── Pre-install gates (HTTPS refusal, guard code) ─────────────────────────
+   Rendered by app/setup/template.php before the wizard proper, without the app
+   stylesheets. */
+.setup-gate-lang {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+.setup-gate-lang-sel {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.setup-gate-title {
+    margin: .5rem 0 .75rem;
+    font-size: 1.15rem;
+    line-height: 1.35;
+}
+.setup-gate-body {
+    text-align: left;
+    line-height: 1.6;
+}
+.setup-gate-filename {
+    margin: 1rem 0 .5rem;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+/* Only the path may break anywhere: the sentence above it breaks between
+   words, since a word split mid-way reads as a typo. */
+.setup-gate-filename code {
+    word-break: break-all;
+    display: inline-block;
+    padding: .5rem .75rem;
+    border-radius: 6px;
+    font-size: .95rem;
+}
+/* Honeypot: off-screen rather than display:none, since some bots skip
+   hidden fields but fill in everything else. */
+.setup-gate-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.setup-gate-redacted {
+    opacity: .55;
+    letter-spacing: .15em;
+}
+.setup-gate-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+.setup-gate-form input[type="text"] {
+    flex: 1 1 12rem;
+    text-align: center;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+}
+.setup-gate-form .btn {
+    flex: 0 0 auto;
+}
+.setup-gate-foot {
+    margin-top: 1.5rem;
+    opacity: .7;
+    font-size: .85rem;
+    text-align: center;
+}
+
+/* ── Wizard layout additions ─────────────────────────────────────── */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+.step-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+/* The forward button is on the right in every step, whether or not a Back
+   button shares the row. */
+.step-actions .btn-primary {
+    margin-left: auto;
+}
+/* Install summary: label above value, in the requirements screen's code box.
+   A long path scrolls sideways instead of wrapping mid-name. */
+#install-summary {
+    margin: 0 0 16px;
+    font-size: 0.85rem;
+}
+#install-summary dt {
+    color: var(--text3);
+    font-size: 0.78rem;
+}
+#install-summary dd {
+    margin: 2px 0 10px;
+    padding: 4px 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow-x: auto;
+    user-select: all;
+}
+#btn-install-done {
+    margin-top: 12px;
+}

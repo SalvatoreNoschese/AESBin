@@ -1,0 +1,66 @@
+/* auth.css — classes used only by login and recovery. Loaded after base.css,
+   which provides the tokens, the .card panel, buttons and form fields. */
+/* ── Login only (app/views/login.php) ── */
+#lockout-banner {
+    margin-top: 10px;
+}
+.field-otp {
+    text-align: center;
+    letter-spacing: 0.5em;
+    font-size: 1.4rem;
+}
+
+/* ── Login and recovery ── */
+.link-sm {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--text2);
+}
+/* The recovery link shows only while the config.php gate is open, so it
+   is coloured as a warning. */
+.link-warning,
+.link-warning:hover {
+    color: var(--warning);
+}
+
+/* ── Recovery only (app/views/recovery.php) ── */
+.recovery-subtitle {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+.card-hint-spaced {
+    margin-bottom: 12px;
+}
+.card-hint-spaced-sm {
+    margin-bottom: 8px;
+}
+.recovery-wrap-pw {
+    margin: 8px 0 14px;
+}
+.recovery-totp-check {
+    margin-bottom: 14px;
+}
+
+/* New TOTP secret + QR, verified in step 2 before confirm */
+.recovery-totp-qr {
+    text-align: center;
+    margin: 12px 0;
+}
+.copy-btn-center {
+    display: block;
+    margin: 0 auto 10px;
+}
+.recovery-save-warning {
+    color: var(--warning);
+    margin-bottom: 12px;
+}
+
+/* Copy + download, side by side above the "I saved it" box */
+.recovery-phrase-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 0 0 10px;
+}
