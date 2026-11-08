@@ -83,6 +83,7 @@ AESBin/
 ├── public/                        # The web root: the only folder with URLs
 │   ├── assets/
 │   │   ├── css/                   # Stylesheets (application and installer)
+│   │   ├── fonts/                 # Ubuntu Sans and Ubuntu Sans Mono (woff2)
 │   │   ├── img/                   # Images, flags, icon sprite (icons.svg)
 │   │   ├── js/                    # JavaScript (application and installer)
 │   │   └── meta/                  # Icons and web app metadata

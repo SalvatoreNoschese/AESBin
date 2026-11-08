@@ -1,6 +1,16 @@
 /* base.css — loaded first by every page. Holds what more than one page
    uses; page files (auth, share, privacy, 404, dashboard) load after it
    and override without !important. */
+
+/* ── Fonts ── */
+/* Ubuntu Sans and Ubuntu Sans Mono, variable, Latin subset only, served from
+   here (font-src 'self'). Licence and version: assets/fonts/LICENSE.txt and
+   app/includes/Vendor.php. A missing file falls back to the system fonts. */
+@font-face { font-family: "Ubuntu Sans"; font-style: normal; font-weight: 100 800; font-display: swap; src: url("../fonts/UbuntuSans-wght.woff2") format("woff2"); }
+@font-face { font-family: "Ubuntu Sans"; font-style: italic; font-weight: 100 800; font-display: swap; src: url("../fonts/UbuntuSans-wght-Italic.woff2") format("woff2"); }
+@font-face { font-family: "Ubuntu Sans Mono"; font-style: normal; font-weight: 400 700; font-display: swap; src: url("../fonts/UbuntuSansMono-wght.woff2") format("woff2"); }
+@font-face { font-family: "Ubuntu Sans Mono"; font-style: italic; font-weight: 400 700; font-display: swap; src: url("../fonts/UbuntuSansMono-wght-Italic.woff2") format("woff2"); }
+
 [hidden] {
     display: none !important;
 }
@@ -67,8 +77,8 @@
     --pw-3: #1a7f37;
     --pw-4: #2ea043;
     --radius: 8px;
-    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'Roboto Mono', monospace;
+    --font: "Ubuntu Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Ubuntu Sans Mono", 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'Roboto Mono', monospace;
     --t: 0.15s ease;
 }
 html,

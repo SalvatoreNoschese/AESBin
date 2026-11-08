@@ -432,8 +432,8 @@ was, and what a save will leave it as.
 - Works in the web root `/` or any subdirectory such as `/aesbin/`, with
   `public/` as the document root or the whole project uploaded as it is
 - **No Composer, no npm, no build step**: upload and run
-- **No CDN**: all vendor JS/CSS is served locally, so it works offline or on an
-  intranet (the only outbound request is the update check, which then reports
+- **No CDN**: all vendor JS/CSS and the fonts are served locally, so it works
+  offline or on an intranet (the only outbound request is the update check, which then reports
   GitHub as unreachable)
 - Reverse-proxy aware (Altervista, Cloudflare, nginx): `X-Forwarded-Proto` is
   honoured only from a proxy declared in `security.trusted_proxies`

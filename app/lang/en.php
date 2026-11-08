@@ -910,6 +910,8 @@ return [
     "credit_altcha"                       => "self-hosted PoW CAPTCHA",
     "credit_altcha_php"                   => "CAPTCHA verification (server side)",
     "credit_icons"                        => "interface icons",
+    "credit_ubuntu_sans"                  => "interface font",
+    "credit_ubuntu_sans_mono"             => "code font",
     "credit_kjua"                         => "QR code generator",
     "credit_pdfjs"                        => "PDF rendering",
     "credit_prism"                        => "syntax highlighting",

@@ -145,7 +145,8 @@ about the people who open those links, and an account-recovery path that stays
   server over FTP/SSH, which closes the takeover window every web installer has
 - Self-hosted **ALTCHA** proof-of-work captcha, per-request **CSP nonce**,
   `__Host-` cookies, per-tab session isolation, independent rate-limit buckets
-- **No Composer, no npm, no build step, no CDN**: upload the files and run
+- **No Composer, no npm, no build step, no CDN**: upload the files and run;
+  libraries and fonts (Ubuntu Sans) are served from your own server
 - Italian, English, Spanish, French, German
 
 The full list, with the reasoning behind the non-obvious choices, is in
@@ -200,8 +201,8 @@ storage folder.
 - [Features in full](docs/features.md): what is there, with the reasoning
   behind the less obvious choices
 - [Architecture](docs/architecture.md): the file tree and what each part does
-- [Vendored libraries](docs/vendored-libraries.md): the six libraries, their
-  versions and licences, and how they are updated
+- [Vendored libraries](docs/vendored-libraries.md): the six libraries and the
+  fonts, their versions and licences, and how they are updated
 - [Maintaining](docs/maintaining.md): for anyone changing the code, the traps
   to avoid
 - [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Changelog](CHANGELOG.md)
@@ -246,7 +247,10 @@ version **or offer it as a hosted network service**, you must release the
 corresponding source under the same license. Full text in [LICENSE](LICENSE).
 
 Vendored library authors retain their respective copyrights; see the license
-files under `app/vendor/` and `public/vendor/`.
+files under `app/vendor/` and `public/vendor/`. The interface fonts, Ubuntu
+Sans and Ubuntu Sans Mono, are under the SIL Open Font License 1.1
+(`public/assets/fonts/LICENSE.txt`); the icons are Lucide, under ISC
+(`public/assets/img/LICENSE-lucide.txt`).
 
 ## 👤 Author
 

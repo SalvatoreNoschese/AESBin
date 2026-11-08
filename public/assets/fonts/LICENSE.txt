@@ -1,0 +1,11 @@
+Ubuntu Sans / Ubuntu Sans Mono — version 1.006
+Copyright 2022 The Ubuntu Sans Project Authors
+License: SIL Open Font License 1.1 (OFL-1.1)
+
+This file is a declared pointer, not the licence text.
+Full text: https://openfontlicense.org/open-font-license-official-text/
+Upstream:  https://github.com/canonical/Ubuntu-Sans-fonts
+           https://github.com/canonical/Ubuntu-Sans-Mono-fonts
+
+The .woff2 files in this folder are the "latin" subset served by
+Google Fonts (variable fonts, wght axis), neither renamed nor modified.

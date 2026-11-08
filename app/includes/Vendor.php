@@ -54,7 +54,7 @@ final class Vendor
         [
             // public/vendor/pdfjs/
             "name" => "PDF.js",
-            "version" => "6.4.299",
+            "version" => "6.5.438",
             "url" => "https://github.com/mozilla/pdf.js",
             "license" => "Apache-2.0",
             "role" => "pdfjs",
@@ -79,6 +79,24 @@ final class Vendor
             "url" => "https://github.com/report-uri/passkeys-php",
             "license" => "MIT",
             "role" => "webauthn",
+        ],
+        [
+            // public/assets/fonts/: Google Fonts' Latin subset, variable
+            // (wght). Not in vendor/ because it is not the byte-identical
+            // upstream package: LICENSE.txt there is a pointer.
+            "name" => "Ubuntu Sans",
+            "version" => "1.006", // interface font; see docs/vendored-libraries.md § Fonts
+            "url" => "https://github.com/canonical/Ubuntu-Sans-fonts",
+            "license" => "OFL-1.1",
+            "role" => "ubuntu_sans",
+        ],
+        [
+            // public/assets/fonts/: as above
+            "name" => "Ubuntu Sans Mono",
+            "version" => "1.006", // code font; see docs/vendored-libraries.md § Fonts
+            "url" => "https://github.com/canonical/Ubuntu-Sans-Mono-fonts",
+            "license" => "OFL-1.1",
+            "role" => "ubuntu_sans_mono",
         ],
         // Lucide is not listed here on purpose: it is a static SVG sprite
         // (public/assets/img/icons.svg), not a vendored library with a folder

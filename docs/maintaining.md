@@ -472,7 +472,9 @@ URL, so browsers fetch it at once. A file requested by a URL the application
 does not print (the favicon, the manifest icons, pdf.js's `nowasm/` decoders)
 is listed as an exception in the same block with a short cache. Adding a
 static file means one or the other; `bin/lint.sh` (check 3m) fails on a
-`/vendor/` or `/assets/` URL built by hand.
+`/vendor/` or `/assets/` URL built by hand. The fonts are requested by
+`base.css` without `?v=` and stay in the year-long cache: see
+[Vendored libraries § Fonts](vendored-libraries.md#fonts) before replacing one.
 
 **Prism.** `public/assets/css/prism-aesbin.css` is the theme plus every
 AESBin addition (line-numbers geometry, palette tie-in), all AESBin's own:

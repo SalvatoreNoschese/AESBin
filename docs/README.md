@@ -10,7 +10,7 @@ cover each topic in full, one subject per page.
 | [Security model](security-model.md) | Key hierarchy, threat model, what elevation does and doesn't defend |
 | [Features](features.md) | The complete feature list, with the reasoning behind the non-obvious ones |
 | [Architecture](architecture.md) | Directory layout, request flow, where storage and configuration live |
-| [Vendored libraries](vendored-libraries.md) | What is bundled, which versions, why no CDN, how to update one |
+| [Vendored libraries](vendored-libraries.md) | What is bundled (libraries, icons, fonts), which versions, why no CDN, how to update one |
 | [Maintaining](maintaining.md) | Schema versions, migrations, invariants, release checklist |
 
 Two documents stay in the repository root, where GitHub looks for them:

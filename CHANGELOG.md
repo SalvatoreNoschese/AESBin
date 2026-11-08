@@ -5,6 +5,21 @@ All notable changes to AESBin are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-11-08
+
+### Added
+
+- The interface is set in Ubuntu Sans and Ubuntu Sans Mono (1.006,
+  OFL-1.1), self-hosted in `public/assets/fonts/`, with Ubuntu Sans
+  preloaded on every page. Characters outside the fonts' Latin subset fall
+  back to the system font. Both are listed in About → Credits.
+
+### Changed
+
+- pdf.js 6.4.299 → 6.5.438.
+- CSP: `font-src 'self'`. `public/.htaccess` serves `.woff2`.
+- CI: PHPStan 2.3.5, stylelint 18.0.0.
+
 ## [1.0.0] - 2026-10-31
 
 First public release.
@@ -51,4 +66,5 @@ The full list, with the reasoning behind the non-obvious choices, is in
 `docs/features.md`; the security posture, including the risks accepted on
 purpose, in `SECURITY.md`.
 
+[1.0.1]: https://github.com/SalvatoreNoschese/AESBin/releases/tag/v1.0.1
 [1.0.0]: https://github.com/SalvatoreNoschese/AESBin/releases/tag/v1.0.0

@@ -9,9 +9,11 @@ AESBin ships with the following third-party libraries. No CDN, no npm and no Com
 | [report-uri/passkeys-php](https://github.com/report-uri/passkeys-php) | `app/vendor/passkeys-php/` | 2.0.1 | MIT | Passkey / WebAuthn, server side ([notes](#passkeys-php)) |
 | [altcha-org/altcha-lib-php](https://github.com/altcha-org/altcha-lib-php) | `app/vendor/altcha-lib-php/` | 2.3.0 | MIT | Self-hosted proof-of-work captcha, server side |
 | [altcha-org/altcha](https://github.com/altcha-org/altcha) | `public/vendor/altcha/` | 3.5.0 | MIT | Captcha widget |
-| [mozilla/pdf.js](https://github.com/mozilla/pdf.js) | `public/vendor/pdfjs/` | 6.4.299 | Apache-2.0 | PDF preview (includes pdf.worker) |
+| [mozilla/pdf.js](https://github.com/mozilla/pdf.js) | `public/vendor/pdfjs/` | 6.5.438 | Apache-2.0 | PDF preview (includes pdf.worker) |
 | [PrismJS/prism](https://github.com/PrismJS/prism) | `public/vendor/prism/` | 1.30.0 | MIT | Syntax highlighting |
 | [lrsjng/kjua](https://github.com/lrsjng/kjua) | `public/vendor/kjua/` | 0.10.0 | MIT (in its README) | QR codes |
+| [Ubuntu Sans](https://github.com/canonical/Ubuntu-Sans-fonts) | `public/assets/fonts/` | 1.006 | OFL-1.1 | Interface font ([notes](#fonts)) |
+| [Ubuntu Sans Mono](https://github.com/canonical/Ubuntu-Sans-Mono-fonts) | `public/assets/fonts/` | 1.006 | OFL-1.1 | Code font ([notes](#fonts)) |
 
 Versions are declared in [`app/includes/Vendor.php`](../app/includes/Vendor.php), which is the single source of truth: the About → Credits panel inside the app renders from it, and `bin/lint.sh` fails if this table disagrees with it. Update both in the same commit that replaces a library: a stale version string is worse than none, because it gets trusted.
 
@@ -193,6 +195,11 @@ against the worker's.
 ES modules only (upstream dropped UMD at v4); `preview.js` loads it via a
 memoised dynamic `import()`. `.mjs` needs `AddType text/javascript .mjs`.
 
+Since 6.5, pdf.js can draw pages in a second worker of its own (the renderer
+worker). It is opt-in: it starts only when `GlobalWorkerOptions.rendererSrc`
+names its script, which AESBin neither sets nor vendors, so pages are drawn
+on the main thread as before.
+
 **`nowasm/` is AESBin's own curation.** WebAssembly is off by CSP policy,
 so pdf.js needs the pure-JS fallback decoders: `jbig2_nowasm_fallback.js`
 (also covers CCITT Fax Group 4) and `openjpeg_nowasm_fallback.js` (JPEG
@@ -221,6 +228,27 @@ same Lucide version into a new `<symbol>`.
 Icons replace emoji because emoji are drawn by the visitor's system font:
 different on every platform, and missing altogether for some (flags on
 Windows, which is why the language flags are SVG files too).
+
+## Fonts
+
+Ubuntu Sans and Ubuntu Sans Mono, four files in `public/assets/fonts/`
+(upright and italic of each): Google Fonts' "latin" subset, variable on the
+`wght` axis, neither renamed nor modified. Not under a vendor folder, because
+they are not the byte-identical upstream package: `LICENSE.txt` there is a
+pointer to the OFL text and the upstream repositories. Listed in `Vendor.php`
+anyway, so About → Credits shows them with their version.
+
+The `@font-face` rules are at the top of `base.css`; `--font` and
+`--font-mono` fall back to the system fonts for a missing file or a glyph
+outside the subset. `document-start.php` preloads Ubuntu Sans upright, the
+one every page draws first; italic and mono load when a page uses them. The
+installer does not preload: the fonts still arrive through `base.css`. The
+CSP allows them with `font-src 'self'`.
+
+They are requested by `base.css` without `?v=` and cached for a year like
+every static file, so an update must bring new file names (or every
+`url()` in `base.css` gets a `?v=` of its own, together with the preload):
+replacing a file under the same name would leave browsers on the old one.
 
 ## Why not just load them from a CDN?
 

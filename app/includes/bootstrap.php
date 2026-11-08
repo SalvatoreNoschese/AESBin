@@ -45,7 +45,7 @@ define("AESBIN_ROOT", dirname(__DIR__, 2));
 // constant, the owner's files (config.php) and public/ through AESBIN_ROOT.
 define("AESBIN_APP_DIR", AESBIN_ROOT . "/app");
 
-define("AESBIN_VERSION", "1.0.0");
+define("AESBIN_VERSION", "1.0.1");
 
 // The schema version this code expects is not a constant: it is
 // Migrator::targetVersion(), so adding a migration step is a single change.

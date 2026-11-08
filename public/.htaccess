@@ -62,7 +62,7 @@ RewriteRule ^ /.well-known/security.txt [R=301,L]
 RewriteCond %{REQUEST_URI} \.[^/]+$
 RewriteCond %{REQUEST_URI} !(^|/)(?:index\.php|help\.html|robots\.txt|llms\.txt)$
 RewriteCond %{REQUEST_URI} !(^|/)(?:license|licence|readme|notice|security|changelog)\.(?:txt|md)$ [NC]
-RewriteCond %{REQUEST_URI} !\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest)$ [NC]
+RewriteCond %{REQUEST_URI} !\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest|woff2)$ [NC]
 RewriteRule ^ - [F,L]
 
 # Bot/scanner probes for paths AESBin never has, so router.php's
@@ -155,7 +155,7 @@ ErrorDocument 403 /index.php
     Header always unset Server
     Header always unset X-Powered-By
 
-    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest|txt|md|html)$">
+    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest|woff2|txt|md|html)$">
         Header always set X-Content-Type-Options     "nosniff"
         Header always set Referrer-Policy            "strict-origin-when-cross-origin"
         Header always set Permissions-Policy         "camera=(), microphone=(), geolocation=(), payment=()"
@@ -188,7 +188,9 @@ ErrorDocument 403 /index.php
     # fetched by a URL the application does not print (a manifest icon, a
     # library's own relative request) belongs in that list; bin/lint.sh
     # (check 3m) catches a hand-built one. docs/maintaining.md § Stylesheets.
-    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest)$">
+    # The fonts (.woff2) are requested from base.css without ?v=: they change
+    # only with a new release of the fonts, which then gets new file names.
+    <FilesMatch "\.(?:css|js|mjs|cjs|png|webp|svg|ico|webmanifest|woff2)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 
@@ -212,6 +214,7 @@ ErrorDocument 403 /index.php
 <IfModule mod_mime.c>
     AddType text/javascript           .js .mjs .cjs
     AddType application/manifest+json .webmanifest
+    AddType font/woff2                .woff2
 </IfModule>
 
 # Covers errors before bootstrap.php's ini_set() runs, such as a parse error

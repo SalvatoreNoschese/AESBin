@@ -59,6 +59,8 @@ $_title        = __("app_name") . ($pageTitle !== "" ? " — " . $pageTitle : ""
 <?php if ($requiresJs): ?>
 <script src="<?= e(asset("assets/js/no-js.js")) ?>"></script>
 <?php endif; ?>
+<?php // Upright only: italic and mono do not appear on every page. crossorigin is required for fonts. ?>
+<link rel="preload" href="<?= e(base_url("assets/fonts/UbuntuSans-wght.woff2")) ?>" as="font" type="font/woff2" crossorigin>
 <?php foreach ($pageCss as $_css): ?>
 <link rel="stylesheet" href="<?= e(asset("assets/css/" . $_css)) ?>">
 <?php endforeach; ?>

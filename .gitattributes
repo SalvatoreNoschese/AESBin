@@ -12,6 +12,7 @@ app/vendor/**             linguist-vendored
 public/vendor/**          linguist-vendored
 
 *.webp binary
+*.woff2 binary
 *.svg  text
 
 # Kept out of the archives GitHub generates from a tag ("Source code (zip)"),

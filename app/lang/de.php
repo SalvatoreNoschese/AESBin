@@ -913,6 +913,8 @@ return [
     "credit_altcha"                       => "selbst gehostetes PoW-CAPTCHA",
     "credit_altcha_php"                   => "CAPTCHA-Prüfung (serverseitig)",
     "credit_icons"                        => "Symbole der Oberfläche",
+    "credit_ubuntu_sans"                  => "Schrift der Oberfläche",
+    "credit_ubuntu_sans_mono"             => "Schrift für Code",
     "credit_kjua"                         => "QR-Code-Generator",
     "credit_pdfjs"                        => "PDF-Darstellung",
     "credit_prism"                        => "Syntaxhervorhebung",

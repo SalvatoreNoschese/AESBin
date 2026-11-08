@@ -374,6 +374,7 @@ function csp_header(): void
         implode(" ", $style) .
         "; img-src 'self' data: blob:" .
         "; media-src 'self' blob:" .
+        "; font-src 'self'" .
         "; worker-src " .
         implode(" ", $worker) .
         "; manifest-src 'self'" .

@@ -53,7 +53,7 @@ jobs:
           extensions: sodium, openssl, pdo_mysql, fileinfo, mbstring, curl
           # Pinned to a release that passes; bin/lint.sh uses the latest one
           # locally and offers to raise this line when it passes too.
-          tools: phpstan:2.3.4
+          tools: phpstan:2.3.5
           coverage: none
 
       # Level and paths come from bin/tools/phpstan.neon, shared with bin/lint.sh.
@@ -73,7 +73,7 @@ jobs:
       # release that passes; bin/lint.sh uses the latest one locally and
       # offers to raise the version below when it passes too. The runner's Node.
       - name: Install
-        run: npm install --prefix bin/tools/stylelint --no-save --no-audit --no-fund stylelint@17.16.0
+        run: npm install --prefix bin/tools/stylelint --no-save --no-audit --no-fund stylelint@18.0.0
 
       - name: Check
         run: >-
