@@ -15,7 +15,7 @@
 
 set -u
 
-ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT" || exit 1
 
 command -v git >/dev/null 2>&1 || { printf 'ERROR: needs git.\n' >&2; exit 1; }
@@ -26,15 +26,17 @@ VERSION=$(sed -n 's/^define("AESBIN_VERSION", "\([^"]*\)");.*/\1/p' app/includes
 TMP_GIT=$(mktemp -d) || exit 1
 trap 'rm -rf "$TMP_GIT"' EXIT INT TERM
 export GIT_DIR="$TMP_GIT" GIT_WORK_TREE="$ROOT"
-git init -q && git add -A &&
+if ! { git init -q && git add -A &&
 	git -c user.name=make-release -c user.email=make-release@localhost \
-		-c commit.gpgsign=false commit -q -m release ||
-	{ printf 'ERROR: git could not read the sources.\n' >&2; exit 1; }
+		-c commit.gpgsign=false commit -q -m release; }; then
+	printf 'ERROR: git could not read the sources.\n' >&2; exit 1
+fi
 
 NAME="AESBin-$VERSION"
 OUT="bin/dist/$NAME.zip"
-mkdir -p bin/dist && rm -f "$OUT" &&
-	git archive --format=zip --prefix="$NAME/" -o "$OUT" HEAD ||
-	{ printf 'ERROR: git archive failed.\n' >&2; exit 1; }
+if ! { mkdir -p bin/dist && rm -f "$OUT" &&
+	git archive --format=zip --prefix="$NAME/" -o "$OUT" HEAD; }; then
+	printf 'ERROR: git archive failed.\n' >&2; exit 1
+fi
 
 printf '%s  (%s files)\n' "$OUT" "$(git archive --format=tar HEAD | tar -tf - | grep -vc '/$')"

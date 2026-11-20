@@ -22,6 +22,11 @@
 # --fix-hashes is an action, not a check: it does its job and stops. A normal
 # run on a terminal offers the same fix as a question; the option is for when
 # there is no one to answer (CI, a pipe, a script).
+#
+# SC2016 is off for the whole file: every php -r program and every grep
+# pattern holding a literal $ is single-quoted precisely so the shell leaves
+# the $ alone.
+# shellcheck disable=SC2016
 
 set -u
 
@@ -33,7 +38,7 @@ for _arg in "$@"; do
 	esac
 done
 
-ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT" || exit 1
 
 # php runs most sections: without it, half the checks would be skipped and
@@ -225,14 +230,18 @@ say "${B}[3/6] consistency${R}"
 #     a cast to the check for the same key, so this only fails when a file
 #     casts body fields and has no type check anywhere.
 BODY_BAD=0
-for f in $(grep -rl '\$body\[' app/actions/ 2>/dev/null | sort); do
+# A heredoc, not a pipe: the loop must stay in this shell to keep BODY_BAD.
+while IFS= read -r f; do
+	[ -n "$f" ] || continue
 	if grep -q '(\(int\|string\|bool\)) (\?\$body\[\|trim(\$body\[' "$f"; then
 		if ! grep -q 'require_fields\|normalize_body_field\|is_scalar\|is_array' "$f"; then
 			printf '  %s casts a body field with no type check anywhere in the file\n' "$f"
 			BODY_BAD=$((BODY_BAD + 1))
 		fi
 	fi
-done
+done <<EOF
+$(grep -rl '\$body\[' app/actions/ 2>/dev/null | sort)
+EOF
 if [ "$BODY_BAD" -gt 0 ]; then
 	fail "$BODY_BAD action file(s) cast request body fields unchecked"
 else
@@ -259,12 +268,10 @@ VENDOR_BAD=0
 VENDOR_ROWS=$(php -r 'define("AESBIN_APP", true); require "app/includes/Vendor.php"; foreach (AESBin\Vendor::all() as $l) echo $l["version"], "|", $l["license"], "\n";' 2>/dev/null)
 for row in $VENDOR_ROWS; do
 	v=${row%%|*}; lic=${row#*|}
-	for doc in docs/vendored-libraries.md; do
-		if ! grep -qF "| $v | $lic" "$doc"; then
-			say "      $doc has no row with version $v and licence $lic"
-			VENDOR_BAD=$((VENDOR_BAD + 1))
-		fi
-	done
+	if ! grep -qF "| $v | $lic" docs/vendored-libraries.md; then
+		say "      docs/vendored-libraries.md has no row with version $v and licence $lic"
+		VENDOR_BAD=$((VENDOR_BAD + 1))
+	fi
 done
 # Every library's credit line, in every language (the About panel prints
 # credit_<role>; a key missing from all five languages keeps them in sync).
@@ -621,10 +628,10 @@ $ICON_USED
 EOF_ICONS
 )
 if [ -n "$ICON_MISSING" ]; then
-	printf '  missing from icons.svg: %s\n' $ICON_MISSING
+	printf '%s\n' "$ICON_MISSING" | sed 's/^/  missing from icons.svg: /'
 	fail "icon drawn but not in public/assets/img/icons.svg"
 elif [ -n "$ICON_UNUSED" ]; then
-	printf '  never drawn: %s\n' $ICON_UNUSED
+	printf '%s\n' "$ICON_UNUSED" | sed 's/^/  never drawn: /'
 	fail "icons.svg carries symbols nothing uses"
 else
 	say "      icons         OK — $(printf '%s\n' "$ICON_DEFINED" | wc -l | tr -d ' ') symbols"
@@ -636,7 +643,9 @@ say "${B}[4/6] release hygiene${R}"
 
 # Leftover fetch-vendor.sh archives, listed for housekeeping only: bin/dist/
 # is git-ignored, so they cannot reach a tagged release.
-STAGING=$(ls bin/dist/aesbin-vendor-*.zip 2>/dev/null | head -3)
+STAGING=$(for f in bin/dist/aesbin-vendor-*.zip; do
+	[ -e "$f" ] && printf '%s\n' "$f"
+done | head -n 3)
 if [ -n "$STAGING" ]; then
 	printf '%s\n' "$STAGING" | sed 's/^/                    /'
 	say "      staging       old vendor archives, safe to delete"
@@ -786,6 +795,7 @@ say "${B}$SEC${R}"
 CSS_CLASSES="$(mktemp)"; USED_CLASSES="$(mktemp)"
 trap 'rm -f "$LANG_KEYS" "$USED_KEYS" "$CSS_CLASSES" "$USED_CLASSES"' EXIT
 awk '
+	FILENAME ~ /prism-aesbin\.css$/ { next }
 	{ line = $0
 	  out = ""
 	  while (length(line) > 0) {
@@ -795,7 +805,7 @@ awk '
 	               out = out substr(line, 1, i - 1); line = substr(line, i + 2); inc = 1 }
 	  }
 	  print out }
-' $(ls public/assets/css/*.css | grep -v prism-aesbin) \
+' public/assets/css/*.css \
 	| grep -oE '\.[a-zA-Z_-][a-zA-Z0-9_-]*' | tr -d '.' \
 	| grep -vE '^(altcha|prism|token|line-numbers|toast-)' | sort -u > "$CSS_CLASSES"
 find app/actions app/includes app/views app/setup public/assets -name '*.php' -o -name '*.js' -o -name '*.html' -o -name '*.svg' \
@@ -949,7 +959,7 @@ say ""
 # "if (...):", and misses conditions that wrap across lines.
 SEC="5f. Alternative PHP syntax (if:/endif, foreach:/endforeach)"
 say "${B}$SEC${R}"
-ALT_BAD=$(php -r '
+ALT_BAD=$(find app/actions app/includes app/views app/setup public/assets -name '*.php' -exec php -r '
 	$exit = 0;
 	foreach (array_slice($argv, 1) as $path) {
 		$src = file_get_contents($path);
@@ -1040,7 +1050,7 @@ ALT_BAD=$(php -r '
 		}
 	}
 	exit($exit);
-' -- $(find app/actions app/includes app/views app/setup public/assets -name '*.php' -print) 2>&1)
+' -- {} + 2>&1)
 if [ -n "$ALT_BAD" ]; then
 	printf '%s\n' "$ALT_BAD" | while IFS= read -r l; do say "      ${Y}$l${R}"; done
 	fail "$SEC"
@@ -1054,7 +1064,7 @@ say ""
 # value unread, usually a copy-paste leftover. Valid syntax, so php -l is silent.
 SEC="5g. Variable reassigned immediately without being read"
 say "${B}$SEC${R}"
-DEAD_STORE=$(php -r '
+DEAD_STORE=$(find app/actions app/includes app/views app/setup public/assets -name '*.php' -exec php -r '
 	$exit = 0;
 	$skip = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
 
@@ -1148,7 +1158,7 @@ DEAD_STORE=$(php -r '
 		}
 	}
 	exit($exit);
-' -- $(find app/actions app/includes app/views app/setup public/assets -name '*.php' -print) 2>&1)
+' -- {} + 2>&1)
 if [ -n "$DEAD_STORE" ]; then
 	printf '%s\n' "$DEAD_STORE" | while IFS= read -r l; do say "      ${Y}$l${R}"; done
 	fail "$SEC"
@@ -1243,8 +1253,7 @@ say ""
 SEC="5i. JS smoke test (loads the files in a fake DOM)"
 say "${B}$SEC${R}"
 if command -v node >/dev/null 2>&1; then
-	SMOKE=$(node bin/tools/smoke.js 2>&1)
-	if [ $? -eq 0 ]; then
+	if SMOKE=$(node bin/tools/smoke.js 2>&1); then
 		say "      $(printf '%s\n' "$SMOKE" | grep -c '^  OK') checks passed OK"
 		printf '%s\n' "$SMOKE" | grep '^  --' | while IFS= read -r l; do say "    $l"; done
 	else
@@ -1508,8 +1517,8 @@ if [ -z "$PHPSTAN" ]; then
 # Judged by the exit status, not by whether PHPStan printed anything: from
 # 2.3.2 it prints a note about PHPStan Turbo on a clean run too, which a test
 # for "any output" read as problems.
-elif PHPSTAN_OUT=$($PHPSTAN analyse -c bin/tools/phpstan.neon --memory-limit=1G \
-	--no-progress --error-format=raw 2>&1); [ $? -ne 0 ]; then
+elif ! PHPSTAN_OUT=$($PHPSTAN analyse -c bin/tools/phpstan.neon --memory-limit=1G \
+	--no-progress --error-format=raw 2>&1); then
 	printf '%s\n' "$PHPSTAN_OUT" | sed 's/^/  /' | grep .
 	fail "static analysis found problems"
 	explain_failure phpstan "$PHPSTAN_HAVE"

@@ -7,13 +7,13 @@ AESBin ships with the following third-party libraries. No CDN, no npm and no Com
 | Library | Directory | Version | Licence | Purpose |
 |---------|-----------|---------|---------|---------|
 | [report-uri/passkeys-php](https://github.com/report-uri/passkeys-php) | `app/vendor/passkeys-php/` | 2.0.1 | MIT | Passkey / WebAuthn, server side ([notes](#passkeys-php)) |
-| [altcha-org/altcha-lib-php](https://github.com/altcha-org/altcha-lib-php) | `app/vendor/altcha-lib-php/` | 2.3.0 | MIT | Self-hosted proof-of-work captcha, server side |
-| [altcha-org/altcha](https://github.com/altcha-org/altcha) | `public/vendor/altcha/` | 3.5.0 | MIT | Captcha widget |
+| [altcha-org/altcha-lib-php](https://github.com/altcha-org/altcha-lib-php) | `app/vendor/altcha-lib-php/` | 2.4.0 | MIT | Self-hosted proof-of-work captcha, server side |
+| [altcha-org/altcha](https://github.com/altcha-org/altcha) | `public/vendor/altcha/` | 3.7.0 | MIT | Captcha widget |
 | [mozilla/pdf.js](https://github.com/mozilla/pdf.js) | `public/vendor/pdfjs/` | 6.5.438 | Apache-2.0 | PDF preview (includes pdf.worker) |
 | [PrismJS/prism](https://github.com/PrismJS/prism) | `public/vendor/prism/` | 1.30.0 | MIT | Syntax highlighting |
 | [lrsjng/kjua](https://github.com/lrsjng/kjua) | `public/vendor/kjua/` | 0.10.0 | MIT (in its README) | QR codes |
-| [Ubuntu Sans](https://github.com/canonical/Ubuntu-Sans-fonts) | `public/assets/fonts/` | 1.006 | OFL-1.1 | Interface font ([notes](#fonts)) |
-| [Ubuntu Sans Mono](https://github.com/canonical/Ubuntu-Sans-Mono-fonts) | `public/assets/fonts/` | 1.006 | OFL-1.1 | Code font ([notes](#fonts)) |
+| [Ubuntu Sans](https://github.com/canonical/Ubuntu-Sans-fonts) | `public/assets/fonts/` | 1.006 | Ubuntu-font-1.0 | Interface font ([notes](#fonts)) |
+| [Ubuntu Sans Mono](https://github.com/canonical/Ubuntu-Sans-Mono-fonts) | `public/assets/fonts/` | 1.006 | Ubuntu-font-1.0 | Code font ([notes](#fonts)) |
 
 Versions are declared in [`app/includes/Vendor.php`](../app/includes/Vendor.php), which is the single source of truth: the About → Credits panel inside the app renders from it, and `bin/lint.sh` fails if this table disagrees with it. Update both in the same commit that replaces a library: a stale version string is worse than none, because it gets trusted.
 

@@ -71,8 +71,10 @@ RewriteRule ^ - [F,L]
 # Before adding an entry, check it against /api/, /login, /privacy,
 # /recovery, /s/, /assets/ and /vendor/.
 
-# WordPress, by far the loudest family
-RewriteRule ^(?:wp-|wordpress(?:/|$)) - [F,L,NC]
+# WordPress, by far the loudest family. Matched in any segment, not anchored
+# to ^: probes also arrive behind guessed install folders (/login/, /blog/,
+# /wp/). AESBin has no path segment starting with "wp-".
+RewriteRule (^|/)(?:wp-|wordpress(?:/|$)) - [F,L,NC]
 
 # No leading dot, so the hidden-path rule above misses these.
 RewriteRule ^(?:env(?:/|$)|ip(?:/|$)) - [F,L,NC]
@@ -212,9 +214,10 @@ ErrorDocument 403 /index.php
 
 # Explicit MIME types
 <IfModule mod_mime.c>
+    AddType text/plain                .md
+    AddType font/woff2                .woff2
     AddType text/javascript           .js .mjs .cjs
     AddType application/manifest+json .webmanifest
-    AddType font/woff2                .woff2
 </IfModule>
 
 # Covers errors before bootstrap.php's ini_set() runs, such as a parse error

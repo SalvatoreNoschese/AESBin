@@ -48,8 +48,8 @@
 
 set -u
 
-ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
+HERE=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 
 # Downloads are staged in a temporary directory, removed after a successful
 # run. The archive goes to bin/dist/ (git-ignored), never the project root,
@@ -411,14 +411,16 @@ prism-typescript prism-swift prism-ruby"
 	if [ "$ok" -eq 1 ]; then
 		mkdir -p "$OUT/$PVU/prism"
 		: > "$OUT/$PVU/prism/prism.min.js"
+		n=0
 		for part in $PARTS; do
+			n=$((n + 1))
 			cat "$tmp/$part.min.js" >> "$OUT/$PVU/prism/prism.min.js"
 			# Minified files do not always end with a newline or semicolon.
 			printf '\n' >> "$OUT/$PVU/prism/prism.min.js"
 		done
 		cat "$tmp/zz-line-numbers.min.js" >> "$OUT/$PVU/prism/prism.min.js"
 		printf '\n' >> "$OUT/$PVU/prism/prism.min.js"
-		printf '    ok     %s/prism/prism.min.js (%s parts + line-numbers)\n' "$PVU" "$(printf '%s\n' $PARTS | wc -l | tr -d ' ')"
+		printf '    ok     %s/prism/prism.min.js (%s parts + line-numbers)\n' "$PVU" "$n"
 	else
 		FAILED=1
 	fi

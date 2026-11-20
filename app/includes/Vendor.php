@@ -30,7 +30,7 @@ final class Vendor
         [
             // public/vendor/altcha/
             "name" => "ALTCHA",
-            "version" => "3.5.0",
+            "version" => "3.7.0",
             "url" => "https://github.com/altcha-org/altcha",
             "license" => "MIT",
             "role" => "altcha",
@@ -38,7 +38,7 @@ final class Vendor
         [
             // app/vendor/altcha-lib-php/
             "name" => "ALTCHA-PHP",
-            "version" => "2.3.0", // upstream package root, verbatim; see docs/vendored-libraries.md § altcha-lib-php
+            "version" => "2.4.0", // upstream package root, verbatim; see docs/vendored-libraries.md § altcha-lib-php
             "url" => "https://github.com/altcha-org/altcha-lib-php",
             "license" => "MIT",
             "role" => "altcha_php",
@@ -87,7 +87,7 @@ final class Vendor
             "name" => "Ubuntu Sans",
             "version" => "1.006", // interface font; see docs/vendored-libraries.md § Fonts
             "url" => "https://github.com/canonical/Ubuntu-Sans-fonts",
-            "license" => "OFL-1.1",
+            "license" => "Ubuntu-font-1.0",
             "role" => "ubuntu_sans",
         ],
         [
@@ -95,7 +95,7 @@ final class Vendor
             "name" => "Ubuntu Sans Mono",
             "version" => "1.006", // code font; see docs/vendored-libraries.md § Fonts
             "url" => "https://github.com/canonical/Ubuntu-Sans-Mono-fonts",
-            "license" => "OFL-1.1",
+            "license" => "Ubuntu-font-1.0",
             "role" => "ubuntu_sans_mono",
         ],
         // Lucide is not listed here on purpose: it is a static SVG sprite
